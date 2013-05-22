@@ -11,51 +11,76 @@ import android.view.View;
 
 import com.centny.jetty4a.server.JettyServer;
 
+/**
+ * the main activity.
+ */
 public class JettyActivity extends Activity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_jetty);
-    }
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_jetty);
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.jetty, menu);
-        return true;
-    }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.jetty, menu);
+		return true;
+	}
 
-    JettyServer js = null;
+	/**
+	 * the Jetty Server.
+	 */
+	JettyServer js = null;
 
-    public void onClk(View v) {
-        if (js != null) {
-            try {
-                js.stop();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            js = null;
-            Log.d("Server", "stopped");
-        } else {
-            File wdir = new File(Environment.getExternalStorageDirectory(),
-                    "webapp");
-            if (!wdir.exists()) {
-                wdir.mkdirs();
-            }
-            js = new JettyServer(wdir, 8080);
-            new Thread(new Runnable() {
+	/**
+	 * click for start Jetty server or stop.
+	 * 
+	 * @param v
+	 *            button view.
+	 */
+	public void onClk(View v) {
+		Log.d("File", getApplicationContext().getFilesDir().getAbsolutePath());
+		for (String n : new File(getApplicationContext().getFilesDir()
+				.getAbsolutePath()).list()) {
+			Log.d("File", n);
+		}
+		if (js != null) {
+			try {
+				js.stop();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			js = null;
+			Log.d("Server", "stopped");
+		} else {
+			File wdir = new File(Environment.getExternalStorageDirectory(),
+					"webapp");
+			if (!wdir.exists()) {
+				wdir.mkdirs();
+			}
+			Log.d("Server", this.getApplicationContext().getFilesDir()
+					.getAbsolutePath());
+			Log.d("Server", wdir.getAbsolutePath());
+			js = new JettyServer(this.getApplicationContext().getFilesDir(),
+					wdir, 8080);
+			new Thread(new Runnable() {
 
-                @Override
-                public void run() {
-                    try {
-                        Log.d("Server", "starting...");
-                        js.start();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-        }
-    }
+				@Override
+				public void run() {
+					try {
+						Log.d("Server", "check deploy...");
+						js.checkDeploy();
+						Log.d("Server", "load web context...");
+						js.loadWebContext();
+						Log.d("Server", "starting...");
+						js.start();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
+		}
+	}
 }

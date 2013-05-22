@@ -1,17 +1,32 @@
 package com.centny.jetty4a.server;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.InvalidParameterException;
+import java.security.MessageDigest;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -20,13 +35,17 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import dalvik.system.DexClassLoader;
 
 public class JettyServer extends Server {
-	private File wsdir;
+	private File wsdir;// the workspace directory.
+	private File dydir;// the deploy directory.
+	// all context handler.
 	private ContextHandlerCollection contexts = new ContextHandlerCollection();
+	// context handler map by name.
 	private Map<String, Handler> servers = new HashMap<String, Handler>();
 
-	public JettyServer(File wsdir, int port) {
+	public JettyServer(File wsdir, File deploy, int port) {
 		super(port);
 		this.wsdir = wsdir;
+		this.dydir = deploy;
 		if (!this.wsdir.exists()) {
 			this.wsdir.mkdirs();
 		}
@@ -34,15 +53,188 @@ public class JettyServer extends Server {
 			throw new InvalidParameterException("initial server in workspace "
 					+ this.wsdir.getAbsolutePath() + " error");
 		}
-		this.initWebContext();
 	}
 
-	private void initWebContext() {
+	public static String readMd5(File dir) {
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new InputStreamReader(
+					new FileInputStream(new File(dir, ".md5"))));
+			return reader.readLine();
+		} catch (Exception e) {
+			return "";
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+				}
+			}
+		}
+	}
+
+	public static void writeMd5(File dir, String md5) {
+		BufferedWriter writer = null;
+		try {
+			writer = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(new File(dir, ".md5"))));
+			writer.write(md5);
+		} catch (Exception e) {
+		} finally {
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+				}
+			}
+		}
+	}
+
+	public static void unzip(File zip, File dir) throws IOException {
+		ZipFile zipFile = null;
+		BufferedInputStream bis = null;
+		BufferedOutputStream bos = null;
+		try {
+			zipFile = new ZipFile(zip);
+			Enumeration<?> emu = zipFile.entries();
+			File tf;
+			int BUFFER = 2048;
+			byte data[] = new byte[BUFFER];
+			while (emu.hasMoreElements()) {
+				ZipEntry entry = (ZipEntry) emu.nextElement();
+				if (entry.isDirectory()) {
+					tf = new File(dir, entry.getName());
+					if (!tf.exists()) {
+						tf.mkdirs();
+					}
+					continue;
+				}
+				bis = new BufferedInputStream(zipFile.getInputStream(entry));
+				tf = new File(dir, entry.getName());
+				File parent = tf.getParentFile();
+				if (parent != null && (!parent.exists())) {
+					parent.mkdirs();
+				}
+				bos = new BufferedOutputStream(new FileOutputStream(tf), BUFFER);
+				int count;
+				while ((count = bis.read(data, 0, BUFFER)) != -1) {
+					bos.write(data, 0, count);
+				}
+				bos.flush();
+				bos.close();
+				bis.close();
+				bis = null;
+				bos = null;
+			}
+			zipFile.close();
+			zipFile = null;
+		} catch (IOException e) {
+			if (zipFile != null) {
+				try {
+					zipFile.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+			if (bis != null) {
+				try {
+					bis.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+			if (bos != null) {
+				try {
+					bos.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+			throw e;
+		}
+	}
+
+	public static String checkMd5(File file) {
+		FileInputStream in = null;
+		try {
+			in = new FileInputStream(file);
+			MessageDigest digester = MessageDigest.getInstance("MD5");
+			byte[] bytes = new byte[8192];
+			int byteCount;
+			while ((byteCount = in.read(bytes)) > 0) {
+				digester.update(bytes, 0, byteCount);
+			}
+			byte[] digest = digester.digest();
+			return new String(digest);
+		} catch (Exception e) {
+			return "";
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+				}
+			}
+		}
+	}
+
+	public void checkDeploy() {
+		File[] dypkg = this.dydir.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File pathname) {
+				if (!pathname.isFile()) {
+					return false;
+				}
+				return pathname.getName().toLowerCase(Locale.getDefault())
+						.matches(".*\\.zip");
+			}
+		});
+		if (dypkg == null) {
+			return;
+		}
+		Set<String> names = new HashSet<String>();
+		for (File zip : dypkg) {
+			String name = zip.getName();
+			name = name.substring(0, name.length() - 4);
+			names.add(name);
+			File df = new File(this.wsdir, name);
+			try {
+				boolean deploy = false;
+				String fmd5 = checkMd5(zip);
+				if (df.exists()) {
+					String dmd5 = readMd5(df);
+					if (dmd5.equals(fmd5)) {
+						deploy = false;
+					} else {
+						FileUtils.deleteDirectory(df);
+						deploy = true;
+					}
+				} else {
+					deploy = true;
+				}
+				if (!deploy) {
+					continue;
+				}
+				df.mkdirs();
+				unzip(zip, df);
+				writeMd5(df, fmd5);
+			} catch (Exception e) {
+				System.out.println("deploy " + zip.getAbsolutePath() + " to "
+						+ df.getAbsolutePath() + "error");
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	public void loadWebContext() {
 		File[] webdir = this.wsdir.listFiles(new FileFilter() {
 
 			@Override
 			public boolean accept(File pathname) {
-				return new File(pathname, "Web.properties").exists();
+				return new File(pathname, "web.properties").exists()
+						|| new File(pathname, "web.xml").exists();
 			}
 		});
 		if (webdir == null) {
@@ -50,8 +242,7 @@ public class JettyServer extends Server {
 		}
 		for (File wapp : webdir) {
 			try {
-				Handler h = this.loadWebApp(wapp);
-				this.contexts.addHandler(h);
+				this.loadWebApp(wapp);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -59,27 +250,27 @@ public class JettyServer extends Server {
 		this.setHandler(this.contexts);
 	}
 
-	private Handler loadWebApp(File root) {
+	public void loadWebApp(File root) {
 		ContextHandlerCollection chcs = new ContextHandlerCollection();
 		File tf;
-		tf = new File(root, "libs");
+		tf = new File(root, "lib");
 		ClassLoader tcl = this.contexts.getClass().getClassLoader();
 		URLClassLoader ucl = null;
 		try {
-			ucl = new URLClassLoader(
-					new URL[] { new URL(tf.getAbsolutePath()) }, tcl);
+			ucl = new URLClassLoader(new URL[] { new URL("file://"
+					+ tf.getAbsolutePath()) }, tcl);
 			tcl = ucl;
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		tf = new File(root, "classes.dex");
+		tf = new File(root, "classes.jar");
 		DexClassLoader dcl = null;
 		if (tf.exists()) {
 			dcl = new DexClassLoader(tf.getAbsolutePath(),
 					root.getAbsolutePath(), null, tcl);
 			tcl = dcl;
 		}
-		tf = new File(root, "Web.properties");
+		tf = new File(root, "web.properties");
 		Properties webp = new Properties();
 		if (tf.exists()) {
 			try {
@@ -106,28 +297,36 @@ public class JettyServer extends Server {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		tf = new File(root, "Web.xml");
-		if (tf.exists()) {
-			WebAppContext wapp = new WebAppContext();
-			wapp.setDescriptor(tf.getAbsolutePath());
-			if (webp.contains("WebResourceBase")) {
-				wapp.setResourceBase(new File(root, webp
-						.getProperty("WebResourceBase")).getAbsolutePath());
-			}
-			if (webp.containsKey("WebContextPath")) {
-				wapp.setContextPath(webp.getProperty("WebResourceBase"));
-			}
-			wapp.setParentLoaderPriority(true);
-			wapp.setClassLoader(tcl);
-			sl.initWebApp(wapp);
-			chcs.addHandler(wapp);
-		}
 		String name = root.getName();
 		if (webp.containsKey("WebName")) {
 			name = webp.getProperty("WebName");
 		}
+		tf = new File(root, "web.xml");
+		if (tf.exists()) {
+			WebAppContext wapp = new WebAppContext();
+			wapp.setDescriptor(tf.getAbsolutePath());
+			wapp.setParentLoaderPriority(true);
+			wapp.setClassLoader(tcl);
+			if (webp.contains("WebResourceBase")) {
+				wapp.setResourceBase(new File(root, webp
+						.getProperty("WebResourceBase")).getAbsolutePath());
+			} else {
+				File wc = new File(root, "WebContext");
+				if (!wc.exists()) {
+					wc.mkdirs();
+				}
+				wapp.setResourceBase(wc.getAbsolutePath());
+			}
+			if (webp.containsKey("WebContextPath")) {
+				wapp.setContextPath(webp.getProperty("WebResourceBase"));
+			} else {
+				wapp.setContextPath("/" + name);
+			}
+			sl.initWebApp(wapp);
+			chcs.addHandler(wapp);
+		}
 		this.servers.put(name, chcs);
-		return chcs;
+		this.contexts.addHandler(chcs);
 	}
 
 	/**
