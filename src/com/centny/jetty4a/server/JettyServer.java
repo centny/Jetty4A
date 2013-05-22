@@ -30,11 +30,21 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.util.log.Log;
+import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import dalvik.system.DexClassLoader;
 
+/**
+ * the JettyServer class for Auto deploy the web application package.
+ * 
+ * @author Centny
+ * 
+ */
 public class JettyServer extends Server {
+	// the log.
+	private Logger log = Log.getLogger(JettyServer.class);
 	private File wsdir;// the workspace directory.
 	private File dydir;// the deploy directory.
 	// all context handler.
@@ -42,10 +52,22 @@ public class JettyServer extends Server {
 	// context handler map by name.
 	private Map<String, Handler> servers = new HashMap<String, Handler>();
 
+	/**
+	 * the default constructor.
+	 * 
+	 * @param wsdir
+	 *            the workspace directory.
+	 * @param deploy
+	 *            the deploy directory.
+	 * @param port
+	 *            the listen port.
+	 */
 	public JettyServer(File wsdir, File deploy, int port) {
 		super(port);
 		this.wsdir = wsdir;
 		this.dydir = deploy;
+		this.log.info("workspace:%s,deploy:%s", this.wsdir.getAbsoluteFile(),
+				this.dydir);
 		if (!this.wsdir.exists()) {
 			this.wsdir.mkdirs();
 		}
@@ -330,6 +352,7 @@ public class JettyServer extends Server {
 		}
 		this.servers.put(name, chcs);
 		this.contexts.addHandler(chcs);
+		System.out.println("");
 	}
 
 	/**

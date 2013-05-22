@@ -9,12 +9,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 
+import com.centny.jetty4a.server.JettyExt;
 import com.centny.jetty4a.server.JettyServer;
 
 /**
  * the main activity.
  */
 public class JettyActivity extends Activity {
+
+	static {
+		JettyExt.loadJettyCfg();
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
