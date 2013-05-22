@@ -1,8 +1,14 @@
 package com.centny.jetty4a;
 
-import android.os.Bundle;
+import java.io.File;
+
 import android.app.Activity;
+import android.os.Bundle;
+import android.os.Environment;
 import android.view.Menu;
+import android.view.View;
+
+import com.centny.jetty4a.server.JettyServer;
 
 public class JettyActivity extends Activity {
 
@@ -19,4 +25,35 @@ public class JettyActivity extends Activity {
 		return true;
 	}
 
+	JettyServer js = null;
+
+	public void onClk(View v) {
+		if (js != null) {
+			try {
+				js.stop();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			js = null;
+			return;
+		} else {
+			File wdir = new File(Environment.getExternalStorageDirectory(),
+					"webapp");
+			if (!wdir.exists()) {
+				wdir.mkdirs();
+			}
+			js = new JettyServer(wdir, 80);
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+						js.start();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
+		}
+	}
 }
