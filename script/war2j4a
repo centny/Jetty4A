@@ -1,0 +1,62 @@
+#!/bin/bash
+if [ "$1" = "-i" ];then
+ if [ "$2" = "" ];then
+  echo "usage:sudo war2j4a -i <install dir>"
+  exit
+ fi
+ spath=${0}
+ if [ -f "$2/$0" ];then
+  rm -f "$2/$0"
+ fi
+ cp $spath $2
+ exit
+fi
+pwd=`pwd`
+tf=$1
+tfext=${tf##*.}
+cext=.j4a
+tfname=${tf%.*}
+echo $tfext
+if [ ! "$tfext" = "war" ];then
+ echo "only support war file..."
+ exit
+fi
+tdir=j4atmp
+wcdir=$tdir/WebContext
+if [ -d $tdir ];then
+ rm -rf $tdir
+fi
+mkdir $tdir
+mkdir $wcdir
+if [ ! -d $wcdir ];then
+ echo "create tmp folder error..."
+ exit
+fi
+echo "unzip $tf ..."
+unzip -d $wcdir $tf
+if [ ! "$?" = "0" ];then
+ echo "unzip $tf error..."
+ exit
+fi 
+cd $tdir
+shopt -s dotglob nullglob
+mv WebContext/WEB-INF/* ./
+rm -rf WebContext/WEB-INF
+echo "creating dex classes..."
+dx --dex --output=classes.jar classes lib/*
+if [ ! "$?" = "0" ];then
+ echo "create dex error..."
+ exit
+fi
+echo "create $tfname$cext package..."
+zip -r $tfname$cext ./*
+mv $tfname$cext ../
+if [ ! "$?" = "0" ];then
+ echo "create package error..."
+ exit
+fi
+cd ../
+echo "cleaning..."
+rm -rf $tdir
+echo "all end..."
+

@@ -187,7 +187,7 @@ public class JettyServer extends Server {
 					return false;
 				}
 				return pathname.getName().toLowerCase(Locale.getDefault())
-						.matches(".*\\.zip");
+						.matches(".*\\.j4a");
 			}
 		});
 		if (dypkg == null) {
@@ -257,8 +257,11 @@ public class JettyServer extends Server {
 		ClassLoader tcl = this.contexts.getClass().getClassLoader();
 		URLClassLoader ucl = null;
 		try {
-			ucl = new URLClassLoader(new URL[] { new URL("file://"
-					+ tf.getAbsolutePath()) }, tcl);
+			ucl = new URLClassLoader(new URL[] {
+					new URL("file://" + tf.getAbsolutePath()),
+					new URL("file://"
+							+ new File(root, "classes").getAbsolutePath()) },
+					tcl);
 			tcl = ucl;
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
