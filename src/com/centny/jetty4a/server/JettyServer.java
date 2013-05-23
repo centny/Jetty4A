@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -341,7 +340,7 @@ public class JettyServer extends Server {
 			tcl = dcl;
 		}
 		tf = new File(root, "web.properties");
-		Properties webp = new Properties();
+		EnvProperties webp = new EnvProperties();
 		if (tf.exists()) {
 			try {
 				webp.load(new FileInputStream(tf));
@@ -397,7 +396,6 @@ public class JettyServer extends Server {
 		}
 		this.servers.put(name, chcs);
 		this.contexts.addHandler(chcs);
-		System.out.println("");
 	}
 
 	/**

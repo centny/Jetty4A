@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <property name="LDIR" value="${EXTERNAL_STORAGE}/jetty4a/log" />
+  
+  <!-- Create a logcat appender -->
+  <appender name="LogCat" class="ch.qos.logback.classic.android.LogcatAppender">
+    <encoder>
+      <pattern>%msg</pattern>
+    </encoder>
+  </appender> 
+
+  <!-- Create a file appender for DEBUG-level messages -->
+  <appender name="ILog" class="ch.qos.logback.core.FileAppender">
+    <file>${LDIR}/jetty4a.log</file>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  
+  <root level="DEBUG">
+    <appender-ref ref="ILog" />
+    <!-- <appender-ref ref="LogCat" /> -->
+  </root>
+</configuration>

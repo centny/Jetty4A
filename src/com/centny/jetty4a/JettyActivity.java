@@ -14,13 +14,15 @@ import com.centny.jetty4a.server.JettyServer;
 
 /**
  * the main activity.
+ * 
  * @author Centny
- *
+ * 
  */
 public class JettyActivity extends Activity {
 
 	static {
-		JettyExt.loadJettyCfg();
+		System.out.println(JettyExt.class);// for load static configure.
+		JettyExt.loadAll();
 	}
 
 	@Override
