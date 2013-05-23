@@ -48,6 +48,7 @@ public class EnvProperties extends Properties {
 			}
 			mch.appendReplacement(sb, kval);
 		}
+		mch.appendTail(sb);
 		return sb.toString();
 	}
 
