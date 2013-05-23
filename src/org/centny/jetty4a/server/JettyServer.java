@@ -277,11 +277,13 @@ public class JettyServer extends Server {
 				}
 				df.mkdirs();
 				unzip(zip, df);
+				this.log.info("deploy", zip.getAbsolutePath(), "to",
+						df.getAbsoluteFile());
 				writeMd5(df, fmd5);
 			} catch (Exception e) {
-				System.out.println("deploy " + zip.getAbsolutePath() + " to "
-						+ df.getAbsolutePath() + "error");
-				e.printStackTrace();
+				this.log.warn(
+						"deploy " + zip.getAbsolutePath() + " to "
+								+ df.getAbsolutePath() + "error", e);
 			}
 		}
 
@@ -302,11 +304,14 @@ public class JettyServer extends Server {
 		if (webdir == null) {
 			return;
 		}
+		this.log.info("found " + webdir.length + " WebApp in "
+				+ this.wsdir.getAbsolutePath());
 		for (File wapp : webdir) {
 			try {
 				this.loadWebApp(wapp);
+				this.log.info("load " + wapp.getAbsolutePath() + " success");
 			} catch (Exception e) {
-				e.printStackTrace();
+				this.log.warn("load " + wapp.getAbsolutePath() + " error", e);
 			}
 		}
 		this.setHandler(this.contexts);
