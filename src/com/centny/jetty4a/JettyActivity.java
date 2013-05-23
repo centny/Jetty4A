@@ -14,6 +14,8 @@ import com.centny.jetty4a.server.JettyServer;
 
 /**
  * the main activity.
+ * @author Centny
+ *
  */
 public class JettyActivity extends Activity {
 

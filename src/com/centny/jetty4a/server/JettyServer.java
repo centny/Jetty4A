@@ -77,6 +77,13 @@ public class JettyServer extends Server {
 		}
 	}
 
+	/**
+	 * read MD5 code in .md5 file under folder.
+	 * 
+	 * @param dir
+	 *            target folder.
+	 * @return it will return empty string if not found.
+	 */
 	public static String readMd5(File dir) {
 		BufferedReader reader = null;
 		try {
@@ -95,6 +102,14 @@ public class JettyServer extends Server {
 		}
 	}
 
+	/**
+	 * write MD5 code to .md5 file in folder.
+	 * 
+	 * @param dir
+	 *            target folder.
+	 * @param md5
+	 *            MD5 code.
+	 */
 	public static void writeMd5(File dir, String md5) {
 		BufferedWriter writer = null;
 		try {
@@ -112,6 +127,16 @@ public class JettyServer extends Server {
 		}
 	}
 
+	/**
+	 * unzip zip file to folder.
+	 * 
+	 * @param zip
+	 *            the target zip file.
+	 * @param dir
+	 *            the target folder.
+	 * @throws IOException
+	 *             unzip error.
+	 */
 	public static void unzip(File zip, File dir) throws IOException {
 		ZipFile zipFile = null;
 		BufferedInputStream bis = null;
@@ -176,6 +201,13 @@ public class JettyServer extends Server {
 		}
 	}
 
+	/**
+	 * check MD5 code to file.
+	 * 
+	 * @param file
+	 *            the target file.
+	 * @return MD5 string.
+	 */
 	public static String checkMd5(File file) {
 		FileInputStream in = null;
 		try {
@@ -200,6 +232,10 @@ public class JettyServer extends Server {
 		}
 	}
 
+	/**
+	 * check deploy in deploy folder.<br/>
+	 * it will auto deploy all WebApp package(.j4a).
+	 */
 	public void checkDeploy() {
 		File[] dypkg = this.dydir.listFiles(new FileFilter() {
 
@@ -250,6 +286,9 @@ public class JettyServer extends Server {
 
 	}
 
+	/**
+	 * load all WebApp in workspace.
+	 */
 	public void loadWebContext() {
 		File[] webdir = this.wsdir.listFiles(new FileFilter() {
 
@@ -272,6 +311,12 @@ public class JettyServer extends Server {
 		this.setHandler(this.contexts);
 	}
 
+	/**
+	 * load a WebApp to context.
+	 * 
+	 * @param root
+	 *            the WebApp root path.
+	 */
 	public void loadWebApp(File root) {
 		ContextHandlerCollection chcs = new ContextHandlerCollection();
 		File tf;
