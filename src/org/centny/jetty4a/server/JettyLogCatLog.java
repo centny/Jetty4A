@@ -1,4 +1,4 @@
-package com.centny.jetty4a.server;
+package org.centny.jetty4a.server;
 
 import org.eclipse.jetty.util.log.AbstractLogger;
 import org.eclipse.jetty.util.log.Logger;

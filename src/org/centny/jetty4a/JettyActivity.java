@@ -1,16 +1,15 @@
-package com.centny.jetty4a;
+package org.centny.jetty4a;
 
-import java.io.File;
+import org.centny.jetty4a.server.JettyExt;
+import org.centny.jetty4a.server.JettyServer;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 
-import com.centny.jetty4a.server.JettyExt;
-import com.centny.jetty4a.server.JettyServer;
+import com.centny.jetty4a.R;
 
 /**
  * the main activity.
@@ -29,6 +28,7 @@ public class JettyActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jetty);
+		JettyExt.initJServerWs(this.getApplicationContext());
 	}
 
 	@Override
@@ -50,11 +50,12 @@ public class JettyActivity extends Activity {
 	 *            button view.
 	 */
 	public void onClk(View v) {
-		Log.d("File", getApplicationContext().getFilesDir().getAbsolutePath());
-		for (String n : new File(getApplicationContext().getFilesDir()
-				.getAbsolutePath()).list()) {
-			Log.d("File", n);
-		}
+		// Log.d("File",
+		// getApplicationContext().getFilesDir().getAbsolutePath());
+		// for (String n : new File(getApplicationContext().getFilesDir()
+		// .getAbsolutePath()).list()) {
+		// Log.d("File", n);
+		// }
 		if (js != null) {
 			try {
 				js.stop();
@@ -64,16 +65,15 @@ public class JettyActivity extends Activity {
 			js = null;
 			Log.d("Server", "stopped");
 		} else {
-			File wdir = new File(Environment.getExternalStorageDirectory(),
-					"webapp");
-			if (!wdir.exists()) {
-				wdir.mkdirs();
-			}
-			Log.d("Server", this.getApplicationContext().getFilesDir()
-					.getAbsolutePath());
-			Log.d("Server", wdir.getAbsolutePath());
-			js = new JettyServer(this.getApplicationContext().getFilesDir(),
-					wdir, 8080);
+//			File wdir = new File(Environment.getExternalStorageDirectory(),
+//					"webapp");
+//			if (!wdir.exists()) {
+//				wdir.mkdirs();
+//			}
+//			Log.d("Server", this.getApplicationContext().getFilesDir()
+//					.getAbsolutePath());
+//			Log.d("Server", wdir.getAbsolutePath());
+			js = JettyExt.createServer(8080);
 			new Thread(new Runnable() {
 
 				@Override

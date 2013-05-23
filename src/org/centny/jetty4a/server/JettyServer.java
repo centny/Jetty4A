@@ -1,4 +1,4 @@
-package com.centny.jetty4a.server;
+package org.centny.jetty4a.server;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -26,6 +26,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
+import org.centny.jetty4a.server.api.ServerListener;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -65,8 +66,8 @@ public class JettyServer extends Server {
 		super(port);
 		this.wsdir = wsdir;
 		this.dydir = deploy;
-		this.log.info("workspace:%s,deploy:%s", this.wsdir.getAbsoluteFile(),
-				this.dydir);
+		this.log.info("workspace:" + this.wsdir.getAbsoluteFile() + ",deploy:"
+				+ this.dydir);
 		if (!this.wsdir.exists()) {
 			this.wsdir.mkdirs();
 		}
@@ -261,6 +262,7 @@ public class JettyServer extends Server {
 				String fmd5 = checkMd5(zip);
 				if (df.exists()) {
 					String dmd5 = readMd5(df);
+					dmd5 = "";
 					if (dmd5.equals(fmd5)) {
 						deploy = false;
 					} else {
@@ -340,7 +342,7 @@ public class JettyServer extends Server {
 			tcl = dcl;
 		}
 		tf = new File(root, "web.properties");
-		EnvProperties webp = new EnvProperties();
+		EnvProperties webp = new EnvProperties(System.getProperties());
 		if (tf.exists()) {
 			try {
 				webp.load(new FileInputStream(tf));

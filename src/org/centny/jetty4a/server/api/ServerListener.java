@@ -1,4 +1,4 @@
-package com.centny.jetty4a.server;
+package org.centny.jetty4a.server.api;
 
 import java.io.File;
 import java.util.Properties;
@@ -17,6 +17,37 @@ import org.eclipse.jetty.webapp.WebAppContext;
  * 
  */
 public class ServerListener {
+	
+	/**
+	 * the key of system properties.<br/>
+	 * the Jetty4A external folder where contain configure file,log folder and
+	 * other.
+	 */
+	public static final String J4A_EDIR = "J4A_EDIR";
+
+	/**
+	 * the key of system properties.<br/>
+	 * the Jetty4A deploy path.
+	 */
+	public static final String J4A_DDIR = "J4A_DDIR";
+
+	/**
+	 * the key of system properties.<br/>
+	 * the Jetty4A log path.
+	 */
+	public static final String J4A_LDIR = "J4A_LDIR";
+	
+	/**
+	 * the key of system properties.<br/>
+	 * the Jetty4A configure path.
+	 */
+	public static final String J4A_CDIR = "J4A_CDIR";
+
+	/**
+	 * the key of system properties.<br/>
+	 * the Jetty4A workspace path.
+	 */
+	public static final String J4A_WDIR = "J4A_WDIR";
 
 	/**
 	 * call it when server initial context.

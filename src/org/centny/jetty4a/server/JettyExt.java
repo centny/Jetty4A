@@ -1,4 +1,4 @@
-package com.centny.jetty4a.server;
+package org.centny.jetty4a.server;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,10 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.InvalidParameterException;
 
 import org.eclipse.jetty.util.IO;
 import org.slf4j.LoggerFactory;
 
+import android.content.Context;
 import android.os.Environment;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -22,6 +24,24 @@ import ch.qos.logback.core.joran.spi.JoranException;
  * 
  */
 public class JettyExt {
+	/**
+	 * create a server in port by system properties.
+	 * 
+	 * @param port
+	 *            target port.
+	 * @return the JettyServer instance.
+	 */
+	public static JettyServer createServer(int port) {
+		File wsdir = new File(System.getProperties().getProperty("J4A_WDIR"));
+		File dpdir = new File(System.getProperties().getProperty("J4A_DDIR"));
+		if (wsdir.exists() && dpdir.exists()) {
+			return new JettyServer(wsdir, dpdir, port);
+		} else {
+			throw new InvalidParameterException(
+					"workspace or deploy not exist.");
+		}
+	}
+
 	/**
 	 * call all initial method.
 	 */
@@ -87,8 +107,26 @@ public class JettyExt {
 			cdir.mkdirs();
 		}
 		System.getProperties().setProperty("J4A_CDIR", cdir.getAbsolutePath());
+		//
 	}
 
+	/**
+	 * initial JettyServer workspace folder.
+	 * 
+	 * @param wrapper
+	 *            the ContextWrapper.
+	 */
+	public static void initJServerWs(Context ctx) {
+		File wdir = new File(ctx.getFilesDir(), "wsdir");
+		if (!wdir.exists()) {
+			wdir.mkdirs();
+		}
+		System.getProperties().setProperty("J4A_WDIR", wdir.getAbsolutePath());
+	}
+
+	/**
+	 * initial log back.
+	 */
 	public static void initLogback() {
 		File lf = new File(System.getProperties().getProperty("J4A_CDIR"),
 				"logback.xml");

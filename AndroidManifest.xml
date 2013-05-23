@@ -16,7 +16,7 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme">
         <activity
-                android:name="com.centny.jetty4a.JettyActivity"
+                android:name="org.centny.jetty4a.JettyActivity"
                 android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
