@@ -6,7 +6,7 @@
       <url-pattern>/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
-      <role-name>wdir</role-name>
+      <role-name>dev</role-name>
     </auth-constraint>
   </security-constraint>
   <login-config>

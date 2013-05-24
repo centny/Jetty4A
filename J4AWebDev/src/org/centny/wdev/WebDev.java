@@ -6,6 +6,8 @@ import java.util.Properties;
 import org.centny.jetty4a.server.api.ServerListener;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -33,21 +35,24 @@ public class WebDev extends ServerListener {
 	 */
 	@Override
 	public Handler create(ClassLoader loader, Properties webp) {
-		// adding the external WebApp for workspace path.
+		ContextHandlerCollection chc = new ContextHandlerCollection();
+		// add dev path for develop command.
 		WebAppContext wapp;
 		wapp = new WebAppContext();
 		wapp.setParentLoaderPriority(true);
 		String wpath = webp.getProperty(J4A_WDIR);
 		wapp.setResourceBase(wpath);
-		wapp.setContextPath("/wdir");
-		File web = new File(this.croot, "WDirWeb.xml");
-		if (web.exists()) {
-			wapp.setDescriptor(web.getAbsolutePath());
-		}
+		wapp.setContextPath("/dev");
 		if (this.hls != null) {
 			wapp.getSecurityHandler().setLoginService(hls);
 		}
-		return wapp;
+		File web = new File(this.croot, "DevWeb.xml");
+		if (web.exists()) {
+			wapp.setDescriptor(web.getAbsolutePath());
+		}
+		wapp.addServlet(new ServletHolder(new ShowServlet()), "/show.cmd");
+		chc.addHandler(wapp);
+		return chc;
 	}
 
 	/*
