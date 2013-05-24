@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.centny.jetty4a.server.api.ServerListener;
 import org.eclipse.jetty.util.IO;
 
 /**
@@ -38,25 +39,36 @@ public class JettyBaseCfg {
 	 * initial JettyServer.
 	 */
 	public static void initJ4ARunEnv(File edir) {
-		System.getProperties().setProperty("J4A_EDIR", edir.getAbsolutePath());
+		System.getProperties().setProperty(ServerListener.J4A_EDIR,
+				edir.getAbsolutePath());
 		//
 		File ddir = new File(edir, "webapp");
 		if (!ddir.exists()) {
 			ddir.mkdirs();
 		}
-		System.getProperties().setProperty("J4A_DDIR", ddir.getAbsolutePath());
+		System.getProperties().setProperty(ServerListener.J4A_DDIR,
+				ddir.getAbsolutePath());
 		//
 		File ldir = new File(edir, "log");
 		if (!ldir.exists()) {
 			ldir.mkdirs();
 		}
-		System.getProperties().setProperty("J4A_LDIR", ldir.getAbsolutePath());
+		System.getProperties().setProperty(ServerListener.J4A_LDIR,
+				ldir.getAbsolutePath());
 		//
 		File cdir = new File(edir, "config");
 		if (!cdir.exists()) {
 			cdir.mkdirs();
 		}
-		System.getProperties().setProperty("J4A_CDIR", cdir.getAbsolutePath());
+		System.getProperties().setProperty(ServerListener.J4A_CDIR,
+				cdir.getAbsolutePath());
+		//
+		File rdir = new File(edir, "data");
+		if (!rdir.exists()) {
+			rdir.mkdirs();
+		}
+		System.getProperties().setProperty(ServerListener.J4A_RDIR,
+				rdir.getAbsolutePath());
 		//
 	}
 
@@ -70,6 +82,7 @@ public class JettyBaseCfg {
 		if (!wdir.exists()) {
 			wdir.mkdirs();
 		}
-		System.getProperties().setProperty("J4A_WDIR", wdir.getAbsolutePath());
+		System.getProperties().setProperty(ServerListener.J4A_WDIR,
+				wdir.getAbsolutePath());
 	}
 }

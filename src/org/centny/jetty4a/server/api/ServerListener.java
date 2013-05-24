@@ -50,14 +50,22 @@ public class ServerListener {
 	public static final String J4A_WDIR = "J4A_WDIR";
 
 	/**
+	 * the key of system properties.<br/>
+	 * the Jetty4A run data path.
+	 */
+	public static final String J4A_RDIR = "J4A_RDIR";
+
+	/**
 	 * call it when server initial context.
 	 * 
 	 * @param root
 	 *            the root path for WebApp physical path.
 	 * @param croot
 	 *            the configure root path for WebApp physical path.
+	 * @param droot
+	 *            the runtime data root path for WebApp physical path.
 	 */
-	public void init(File root, File croot) {
+	public void init(File root, File croot, File droot) {
 
 	}
 

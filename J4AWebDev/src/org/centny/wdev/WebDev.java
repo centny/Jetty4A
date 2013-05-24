@@ -66,7 +66,7 @@ public class WebDev extends ServerListener {
 	 * @see org.centny.jetty4a.server.api.ServerListener#init(java.io.File)
 	 */
 	@Override
-	public void init(File root, File croot) {
+	public void init(File root, File croot, File droot) {
 		this.root = root;
 		this.croot = croot;
 		this.log.info("initial app root:" + this.root.getAbsolutePath()

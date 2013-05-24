@@ -49,8 +49,10 @@ public class JettyServer extends Server {
 	 * @return the JettyServer instance.
 	 */
 	public static JettyServer createServer(Class<?> js, int port) {
-		File wsdir = new File(System.getProperties().getProperty("J4A_WDIR"));
-		File dpdir = new File(System.getProperties().getProperty("J4A_DDIR"));
+		File wsdir = new File(System.getProperties().getProperty(
+				ServerListener.J4A_WDIR));
+		File dpdir = new File(System.getProperties().getProperty(
+				ServerListener.J4A_DDIR));
 		if (wsdir.exists() && dpdir.exists()) {
 			try {
 				Constructor<?> ctr = js.getConstructor(File.class, File.class,
@@ -378,9 +380,30 @@ public class JettyServer extends Server {
 	 * load a WebApp to context.
 	 * 
 	 * @param root
-	 *            the WebApp root path.
+	 *            the root path for WebApp physical path.
+	 * @param croot
+	 *            the configure root path for WebApp physical path.
 	 */
 	public void loadWebApp(File root, File croot) {
+		File rdir = new File(System.getProperty(ServerListener.J4A_RDIR));
+		File droot = new File(rdir, root.getName());
+		if (!droot.exists()) {
+			droot.mkdirs();
+		}
+		this.loadWebApp(root, croot, droot);
+	}
+
+	/**
+	 * load a WebApp to context.
+	 * 
+	 * @param root
+	 *            the root path for WebApp physical path.
+	 * @param croot
+	 *            the configure root path for WebApp physical path.
+	 * @param droot
+	 *            the runtime data root path for WebApp physical path.
+	 */
+	public void loadWebApp(File root, File croot, File droot) {
 		ContextHandlerCollection chcs = new ContextHandlerCollection();
 		File tf;
 		// builder class loader.
@@ -405,7 +428,7 @@ public class JettyServer extends Server {
 				e.printStackTrace();
 			}
 		}
-		sl.init(root, croot);
+		sl.init(root, croot, droot);
 		try {
 			Handler h = sl.create(tcl, webp);
 			if (h != null) {
