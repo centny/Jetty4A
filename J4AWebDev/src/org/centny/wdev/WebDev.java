@@ -57,7 +57,12 @@ public class WebDev extends ServerListener {
 	 */
 	@Override
 	public void destroy() {
-		super.destroy();
+		try {
+			this.hls.stop();
+			this.log.info("WDev Realm stopped...");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/*

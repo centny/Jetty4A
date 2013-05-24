@@ -77,6 +77,8 @@ public class JettyServer extends Server {
 	private ContextHandlerCollection contexts = new ContextHandlerCollection();
 	// context handler map by name.
 	private Map<String, Handler> servers = new HashMap<String, Handler>();
+	// all ServerListener.
+	private Set<ServerListener> listeners = new HashSet<ServerListener>();
 
 	/**
 	 * the default constructor.
@@ -264,6 +266,7 @@ public class JettyServer extends Server {
 	 * it will auto deploy all WebApp package(.j4a).
 	 */
 	public void checkDeploy() {
+		this.log.info("check deploy folder for update...");
 		File[] dypkg;
 		dypkg = this.dydir.listFiles(new FileFilter() {
 
@@ -337,8 +340,8 @@ public class JettyServer extends Server {
 	 * load all WebApp in workspace.
 	 */
 	public void loadWebContext() {
+		this.log.info("load all app in webapp folder...");
 		File[] webdir = this.wsdir.listFiles(new FileFilter() {
-
 			@Override
 			public boolean accept(File pathname) {
 				return new File(pathname, "web.properties").exists()
@@ -465,6 +468,7 @@ public class JettyServer extends Server {
 			sl.initWebApp(wapp, webp);
 			chcs.addHandler(wapp);
 		}
+		this.listeners.add(sl);
 		this.servers.put(name, chcs);
 		this.contexts.addHandler(chcs);
 	}
@@ -474,6 +478,34 @@ public class JettyServer extends Server {
 	 */
 	public File getWsdir() {
 		return wsdir;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.jetty.server.Server#doStart()
+	 */
+	@Override
+	protected void doStart() throws Exception {
+		this.log.info("staring server...");
+		this.checkDeploy();
+		this.loadWebContext();
+		super.doStart();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.jetty.server.Server#doStop()
+	 */
+	@Override
+	protected void doStop() throws Exception {
+		this.log.info("stopping server...");
+		for (ServerListener sl : this.listeners) {
+			sl.destroy();
+		}
+		this.listeners.clear();
+		super.doStop();
 	}
 
 }

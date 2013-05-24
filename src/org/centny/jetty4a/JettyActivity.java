@@ -80,11 +80,11 @@ public class JettyActivity extends Activity {
 				@Override
 				public void run() {
 					try {
-						Log.d("Server", "check deploy...");
-						js.checkDeploy();
-						Log.d("Server", "load web context...");
-						js.loadWebContext();
-						Log.d("Server", "starting...");
+//						Log.d("Server", "check deploy...");
+//						js.checkDeploy();
+//						Log.d("Server", "load web context...");
+//						js.loadWebContext();
+//						Log.d("Server", "starting...");
 						js.start();
 					} catch (Exception e) {
 						e.printStackTrace();
