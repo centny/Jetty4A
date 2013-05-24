@@ -1,7 +1,8 @@
 package org.centny.jetty4a;
 
-import org.centny.jetty4a.server.JettyExt;
-import org.centny.jetty4a.server.JettyServer;
+import org.centny.jetty4a.server.J4AServer;
+import org.centny.jetty4a.server.JettyCfgAndroid;
+import org.centny.jetty4a.server.api.JettyServer;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -20,15 +21,15 @@ import com.centny.jetty4a.R;
 public class JettyActivity extends Activity {
 
 	static {
-		System.out.println(JettyExt.class);// for load static configure.
-		JettyExt.loadAll();
+		System.out.println(JettyCfgAndroid.class);// for load static configure.
+		JettyCfgAndroid.loadAll();
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jetty);
-		JettyExt.initJServerWs(this.getApplicationContext());
+		JettyCfgAndroid.initJServerWs(this.getApplicationContext());
 	}
 
 	@Override
@@ -65,15 +66,15 @@ public class JettyActivity extends Activity {
 			js = null;
 			Log.d("Server", "stopped");
 		} else {
-//			File wdir = new File(Environment.getExternalStorageDirectory(),
-//					"webapp");
-//			if (!wdir.exists()) {
-//				wdir.mkdirs();
-//			}
-//			Log.d("Server", this.getApplicationContext().getFilesDir()
-//					.getAbsolutePath());
-//			Log.d("Server", wdir.getAbsolutePath());
-			js = JettyExt.createServer(8080);
+			// File wdir = new File(Environment.getExternalStorageDirectory(),
+			// "webapp");
+			// if (!wdir.exists()) {
+			// wdir.mkdirs();
+			// }
+			// Log.d("Server", this.getApplicationContext().getFilesDir()
+			// .getAbsolutePath());
+			// Log.d("Server", wdir.getAbsolutePath());
+			js = JettyServer.createServer(J4AServer.class, 8080);
 			new Thread(new Runnable() {
 
 				@Override

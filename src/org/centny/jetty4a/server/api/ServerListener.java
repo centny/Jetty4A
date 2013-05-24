@@ -17,7 +17,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
  * 
  */
 public class ServerListener {
-	
+
 	/**
 	 * the key of system properties.<br/>
 	 * the Jetty4A external folder where contain configure file,log folder and
@@ -36,7 +36,7 @@ public class ServerListener {
 	 * the Jetty4A log path.
 	 */
 	public static final String J4A_LDIR = "J4A_LDIR";
-	
+
 	/**
 	 * the key of system properties.<br/>
 	 * the Jetty4A configure path.
@@ -53,9 +53,11 @@ public class ServerListener {
 	 * call it when server initial context.
 	 * 
 	 * @param root
-	 *            the root path for context.
+	 *            the root path for WebApp physical path.
+	 * @param croot
+	 *            the configure root path for WebApp physical path.
 	 */
-	public void init(File root) {
+	public void init(File root, File croot) {
 
 	}
 
@@ -74,13 +76,14 @@ public class ServerListener {
 	}
 
 	/**
-	 * call it when initial a WebAppContext by web.xml.
+	 * call it after a WebAppContext by web.xml is initialed.
 	 * 
 	 * @param wapp
 	 *            the target WebAppContext.
+	 * @param webp
+	 *            the web.properties.
 	 */
-	public void initWebApp(WebAppContext wapp) {
-
+	public void initWebApp(WebAppContext wapp, Properties webp) {
 	}
 
 	/**

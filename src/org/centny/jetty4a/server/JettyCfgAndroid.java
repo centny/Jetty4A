@@ -6,8 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.security.InvalidParameterException;
 
+import org.centny.jetty4a.server.cfg.JettyBaseCfg;
 import org.eclipse.jetty.util.IO;
 import org.slf4j.LoggerFactory;
 
@@ -23,25 +23,7 @@ import ch.qos.logback.core.joran.spi.JoranException;
  * @author Centny.
  * 
  */
-public class JettyExt {
-	/**
-	 * create a server in port by system properties.
-	 * 
-	 * @param port
-	 *            target port.
-	 * @return the JettyServer instance.
-	 */
-	public static JettyServer createServer(int port) {
-		File wsdir = new File(System.getProperties().getProperty("J4A_WDIR"));
-		File dpdir = new File(System.getProperties().getProperty("J4A_DDIR"));
-		if (wsdir.exists() && dpdir.exists()) {
-			return new JettyServer(wsdir, dpdir, port);
-		} else {
-			throw new InvalidParameterException(
-					"workspace or deploy not exist.");
-		}
-	}
-
+public class JettyCfgAndroid extends JettyBaseCfg {
 	/**
 	 * call all initial method.
 	 */
@@ -54,29 +36,9 @@ public class JettyExt {
 	 * configure all.
 	 */
 	static {
-		loadJett4ACfg();
+		JettyBaseCfg.loadJett4ACfg();
 		initJettyServerEnv();
 		Jetty4ALog.loadCfg(System.getProperties());
-	}
-
-	/**
-	 * load jetty4a.properties to system properties.
-	 */
-	public static void loadJett4ACfg() {
-		URL testProps = JettyExt.class.getClassLoader().getResource(
-				"jetty4a.properties");
-		if (testProps != null) {
-			InputStream in = null;
-			try {
-				in = testProps.openStream();
-				System.getProperties().load(in);
-			} catch (IOException e) {
-				System.err.println("Unable to load " + testProps);
-				e.printStackTrace(System.err);
-			} finally {
-				IO.close(in);
-			}
-		}
 	}
 
 	/**
@@ -88,26 +50,7 @@ public class JettyExt {
 		if (!edir.exists()) {
 			edir.mkdirs();
 		}
-		System.getProperties().setProperty("J4A_EDIR", edir.getAbsolutePath());
-		//
-		File ddir = new File(edir, "webapp");
-		if (!ddir.exists()) {
-			ddir.mkdirs();
-		}
-		System.getProperties().setProperty("J4A_DDIR", ddir.getAbsolutePath());
-		//
-		File ldir = new File(edir, "log");
-		if (!ldir.exists()) {
-			ldir.mkdirs();
-		}
-		System.getProperties().setProperty("J4A_LDIR", ldir.getAbsolutePath());
-		//
-		File cdir = new File(edir, "config");
-		if (!cdir.exists()) {
-			cdir.mkdirs();
-		}
-		System.getProperties().setProperty("J4A_CDIR", cdir.getAbsolutePath());
-		//
+		JettyBaseCfg.initJ4ARunEnv(edir);
 	}
 
 	/**
@@ -118,10 +61,7 @@ public class JettyExt {
 	 */
 	public static void initJServerWs(Context ctx) {
 		File wdir = new File(ctx.getFilesDir(), "wsdir");
-		if (!wdir.exists()) {
-			wdir.mkdirs();
-		}
-		System.getProperties().setProperty("J4A_WDIR", wdir.getAbsolutePath());
+		JettyBaseCfg.initWsDir(wdir);
 	}
 
 	/**
@@ -141,7 +81,7 @@ public class JettyExt {
 				return;
 			}
 		} else {
-			URL testProps = JettyExt.class.getClassLoader().getResource(
+			URL testProps = JettyCfgAndroid.class.getClassLoader().getResource(
 					"logback.xml");
 			if (testProps != null) {
 				in = null;

@@ -1,4 +1,4 @@
-package org.centny.jetty4a.server;
+package org.centny.jetty4a.server.api;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -26,15 +27,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
-import org.centny.jetty4a.server.api.ServerListener;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.webapp.WebAppContext;
-
-import dalvik.system.DexClassLoader;
 
 /**
  * the JettyServer class for Auto deploy the web application package.
@@ -43,6 +41,32 @@ import dalvik.system.DexClassLoader;
  * 
  */
 public class JettyServer extends Server {
+	/**
+	 * create a server in port by system properties.
+	 * 
+	 * @param port
+	 *            target port.
+	 * @return the JettyServer instance.
+	 */
+	public static JettyServer createServer(Class<?> js, int port) {
+		File wsdir = new File(System.getProperties().getProperty("J4A_WDIR"));
+		File dpdir = new File(System.getProperties().getProperty("J4A_DDIR"));
+		if (wsdir.exists() && dpdir.exists()) {
+			try {
+				Constructor<?> ctr = js.getConstructor(File.class, File.class,
+						int.class);
+				return (JettyServer) ctr.newInstance(wsdir, dpdir, port);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		} else {
+			System.err.println("workspace or deploy not exist.");
+			return null;
+		}
+	}
+
+	// /////////////////
 	// the log.
 	private Logger log = Log.getLogger(JettyServer.class);
 	private File wsdir;// the workspace directory.
@@ -75,6 +99,7 @@ public class JettyServer extends Server {
 			throw new InvalidParameterException("initial server in workspace "
 					+ this.wsdir.getAbsolutePath() + " error");
 		}
+		this.setHandler(this.contexts);
 	}
 
 	/**
@@ -237,7 +262,8 @@ public class JettyServer extends Server {
 	 * it will auto deploy all WebApp package(.j4a).
 	 */
 	public void checkDeploy() {
-		File[] dypkg = this.dydir.listFiles(new FileFilter() {
+		File[] dypkg;
+		dypkg = this.dydir.listFiles(new FileFilter() {
 
 			@Override
 			public boolean accept(File pathname) {
@@ -251,7 +277,7 @@ public class JettyServer extends Server {
 		if (dypkg == null) {
 			return;
 		}
-		Set<String> names = new HashSet<String>();
+		final Set<String> names = new HashSet<String>();
 		for (File zip : dypkg) {
 			String name = zip.getName();
 			name = name.substring(0, name.length() - 4);
@@ -286,7 +312,23 @@ public class JettyServer extends Server {
 								+ df.getAbsolutePath() + "error", e);
 			}
 		}
+		File[] oldpkg = this.wsdir.listFiles(new FileFilter() {
 
+			@Override
+			public boolean accept(File pathname) {
+				return !names.contains(pathname.getName());
+			}
+		});
+		if (oldpkg == null) {
+			return;
+		}
+		for (File opkg : oldpkg) {
+			try {
+				FileUtils.deleteDirectory(opkg);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -308,13 +350,28 @@ public class JettyServer extends Server {
 				+ this.wsdir.getAbsolutePath());
 		for (File wapp : webdir) {
 			try {
-				this.loadWebApp(wapp);
+				this.loadWebApp(wapp, wapp);
 				this.log.info("load " + wapp.getAbsolutePath() + " success");
 			} catch (Exception e) {
 				this.log.warn("load " + wapp.getAbsolutePath() + " error", e);
 			}
 		}
-		this.setHandler(this.contexts);
+	}
+
+	protected ClassLoader buildClassLoader(File root, ClassLoader tcl) {
+		File tf = new File(root, "lib");
+		try {
+			URLClassLoader ucl = null;
+			ucl = new URLClassLoader(new URL[] {
+					new URL("file://" + tf.getAbsolutePath()),
+					new URL("file://"
+							+ new File(root, "classes").getAbsolutePath()) },
+					tcl);
+			return ucl;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			return tcl;
+		}
 	}
 
 	/**
@@ -323,30 +380,14 @@ public class JettyServer extends Server {
 	 * @param root
 	 *            the WebApp root path.
 	 */
-	public void loadWebApp(File root) {
+	public void loadWebApp(File root, File croot) {
 		ContextHandlerCollection chcs = new ContextHandlerCollection();
 		File tf;
-		tf = new File(root, "lib");
+		// builder class loader.
 		ClassLoader tcl = this.contexts.getClass().getClassLoader();
-		URLClassLoader ucl = null;
-		try {
-			ucl = new URLClassLoader(new URL[] {
-					new URL("file://" + tf.getAbsolutePath()),
-					new URL("file://"
-							+ new File(root, "classes").getAbsolutePath()) },
-					tcl);
-			tcl = ucl;
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		tf = new File(root, "classes.jar");
-		DexClassLoader dcl = null;
-		if (tf.exists()) {
-			dcl = new DexClassLoader(tf.getAbsolutePath(),
-					root.getAbsolutePath(), null, tcl);
-			tcl = dcl;
-		}
-		tf = new File(root, "web.properties");
+		tcl = this.buildClassLoader(root, tcl);
+		//
+		tf = new File(croot, "web.properties");
 		EnvProperties webp = new EnvProperties(System.getProperties());
 		if (tf.exists()) {
 			try {
@@ -364,7 +405,7 @@ public class JettyServer extends Server {
 				e.printStackTrace();
 			}
 		}
-		sl.init(root);
+		sl.init(root, croot);
 		try {
 			Handler h = sl.create(tcl, webp);
 			if (h != null) {
@@ -377,7 +418,7 @@ public class JettyServer extends Server {
 		if (webp.containsKey("WebName")) {
 			name = webp.getProperty("WebName");
 		}
-		tf = new File(root, "web.xml");
+		tf = new File(croot, "web.xml");
 		if (tf.exists()) {
 			WebAppContext wapp = new WebAppContext();
 			wapp.setDescriptor(tf.getAbsolutePath());
@@ -387,18 +428,18 @@ public class JettyServer extends Server {
 				wapp.setResourceBase(new File(root, webp
 						.getProperty("WebResourceBase")).getAbsolutePath());
 			} else {
-				File wc = new File(root, "WebContext");
+				File wc = new File(root, "WebContent");
 				if (!wc.exists()) {
 					wc.mkdirs();
 				}
 				wapp.setResourceBase(wc.getAbsolutePath());
 			}
-			if (webp.containsKey("WebContextPath")) {
-				wapp.setContextPath(webp.getProperty("WebResourceBase"));
+			if (webp.containsKey("WebContentPath")) {
+				wapp.setContextPath(webp.getProperty("WebContentPath"));
 			} else {
 				wapp.setContextPath("/" + name);
 			}
-			sl.initWebApp(wapp);
+			sl.initWebApp(wapp, webp);
 			chcs.addHandler(wapp);
 		}
 		this.servers.put(name, chcs);
