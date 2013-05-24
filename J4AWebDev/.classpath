@@ -8,9 +8,10 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jetty4A"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jetty"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Servlet"/>
+	<classpathentry kind="lib" path="libs/jetty-all-server-8.1.11.v20130520.jar"/>
+	<classpathentry kind="lib" path="libs/Jetty4A-api-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libs/jsch-0.1.50.jar"/>
+	<classpathentry kind="lib" path="libs/servlet-api-3.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

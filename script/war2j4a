@@ -1,27 +1,29 @@
 #!/bin/bash
 if [ "$1" = "-i" ];then
  if [ "$2" = "" ];then
-  echo "usage:sudo war2j4a -i <install dir>"
-  exit
+  echo "usage:sudo war2j4a -i <install dir>">/dev/stderr
+  exit 1
  fi
  spath=${0}
  if [ -f "$2/$0" ];then
   rm -f "$2/$0"
  fi
  cp $spath $2
- exit
+ exit 1
 fi
 pwd=`pwd`
 tf=$1
+sdir=`dirname $tf`
 tfext=${tf##*.}
 cext=.j4a
-tfname=${tf%.*}
+tfname=${tf##*/}
+tfname=${tfname%.*}
 echo $tfext
 if [ ! "$tfext" = "war" ];then
- echo "only support war file..."
- exit
+ echo "only support war file...">/dev/stderr
+ exit 1
 fi
-tdir=j4atmp
+tdir=$sdir/j4atmp
 wcdir=$tdir/WebContext
 if [ -d $tdir ];then
  rm -rf $tdir
@@ -29,34 +31,39 @@ fi
 mkdir $tdir
 mkdir $wcdir
 if [ ! -d $wcdir ];then
- echo "create tmp folder error..."
- exit
+ echo "create tmp folder error...">/dev/stderr
+ exit 1
 fi
 echo "unzip $tf ..."
 unzip -d $wcdir $tf
 if [ ! "$?" = "0" ];then
- echo "unzip $tf error..."
- exit
+ echo "unzip $tf error...">/dev/stderr
+ exit 1
 fi 
 cd $tdir
 shopt -s dotglob nullglob
 mv WebContext/WEB-INF/* ./
 rm -rf WebContext/WEB-INF
 echo "creating dex classes..."
-dx --dex --output=classes.jar classes lib/*
+if [ "$DX_HOME" = "" ];then
+ dx --dex --output=classes.jar classes lib/*
+else
+ $DX_HOME/dx --dex --output=classes.jar classes lib/*
+fi
 if [ ! "$?" = "0" ];then
- echo "create dex error..."
- exit
+ echo "create dex error...">/dev/stderr
+ exit 1
 fi
 echo "create $tfname$cext package..."
 zip -r $tfname$cext ./*
 mv $tfname$cext ../
 if [ ! "$?" = "0" ];then
- echo "create package error..."
- exit
+ echo "create package error...">/dev/stderr
+ exit 1
 fi
 cd ../
 echo "cleaning..."
+cd $pwd
 rm -rf $tdir
 echo "all end..."
 

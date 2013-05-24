@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="J4AWebDev" default="toJ4A" basedir=".">
+	<property name="deploy.dir" value="./build" />
+	<property name="deploy.f" value="${deploy.dir}/${ant.project.name}.war" />
+	<property name="app.dir" value="." />
+	<property name="build.dir" value="${app.dir}/build" />
+	<property name="dest.dir" value="${build.dir}/cls" />
+	<property name="web.dir" value="${app.dir}/WebContent" />
+	<!-- the server library,no necessary copy to WEB-INF/lib -->
+	<property name="lib.dir" value="${app.dir}/libs" />
+	<!-- the web library -->
+	<property name="wlib.dir" value="${app.dir}/WebContent/WEB-INF/lib" />
+
+	<target name="J4AWebDev.war" description="Build the web application archive">
+		<delete dir="${dest.dir}" />
+		<mkdir dir="${dest.dir}" />
+		<javac includeantruntime="true" srcdir="${app.dir}/src" destdir="${dest.dir}">
+			<classpath>
+				<fileset dir="${lib.dir}">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${wlib.dir}">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+			<exclude name="**/*Test.java" />
+		</javac>
+		<copy todir="${dest.dir}">
+			<fileset dir="${app.dir}/src">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<war warfile="${deploy.dir}/${ant.project.name}.war" webxml="${web.dir}/WEB-INF/web.xml">
+			<fileset dir="${web.dir}" />
+			<classes dir="${dest.dir}" />
+		</war>
+	</target>
+
+	<target name="toJ4A" depends="J4AWebDev.war">
+		<exec executable="/usr/local/bin/war2j4a">
+			<arg value="${deploy.f}"/>
+			<env key="DX_HOME" value="/Applications/adt-bundle-mac/sdk/build-tools/android-4.2.2/"/>
+		</exec>
+	</target>
+</project>
