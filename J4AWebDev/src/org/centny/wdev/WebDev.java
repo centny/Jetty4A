@@ -19,6 +19,10 @@ import org.eclipse.jetty.webapp.WebAppContext;
  * 
  */
 public class WebDev extends ServerListener {
+	/**
+	 * the serial version id.
+	 */
+	private static final long serialVersionUID = -6613270016212240308L;
 	// logger.
 	private Logger log = Log.getLogger(WebDev.class);
 	// the app root path and configure root path.

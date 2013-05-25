@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="J4AWebDev" default="toJ4A" basedir=".">
+	<property environment="env" />
 	<property name="deploy.dir" value="./build" />
 	<property name="deploy.f" value="${deploy.dir}/${ant.project.name}.war" />
 	<property name="app.dir" value="." />
@@ -7,7 +8,7 @@
 	<property name="dest.dir" value="${build.dir}/cls" />
 	<property name="web.dir" value="${app.dir}/WebContent" />
 	<!-- the server library,no necessary copy to WEB-INF/lib -->
-	<property name="lib.dir" value="${app.dir}/libs" />
+	<property name="lib.dir" value="${env.J4A_LIB_HOME}" />
 	<!-- the web library -->
 	<property name="wlib.dir" value="${app.dir}/WebContent/WEB-INF/lib" />
 

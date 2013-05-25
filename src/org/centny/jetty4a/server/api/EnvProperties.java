@@ -27,6 +27,21 @@ public class EnvProperties extends Properties {
 	 * @return converted value.
 	 */
 	public static String envVal(String val) {
+		return envVal(val, null);
+	}
+
+	/**
+	 * covert value to env by match $(*).<br/>
+	 * the env value use order:<br/>
+	 * external properties,system properties,system environment.
+	 * 
+	 * @param val
+	 *            target value.
+	 * @param ext
+	 *            the external properties.
+	 * @return converted value.
+	 */
+	public static String envVal(String val, Properties ext) {
 		if (val == null || val.length() == 0) {
 			return val;
 		}
@@ -45,6 +60,12 @@ public class EnvProperties extends Properties {
 			tmp = System.getProperty(key);
 			if (tmp != null) {
 				kval = tmp;
+			}
+			if (ext != null) {
+				tmp = ext.getProperty(key);
+				if (tmp != null) {
+					kval = tmp;
+				}
 			}
 			mch.appendReplacement(sb, kval);
 		}

@@ -1,6 +1,7 @@
 package org.centny.jetty4a.server.api;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Properties;
 
 import org.eclipse.jetty.server.Handler;
@@ -16,7 +17,12 @@ import org.eclipse.jetty.webapp.WebAppContext;
  * @author Centny.
  * 
  */
-public class ServerListener {
+public class ServerListener implements Serializable {
+
+	/**
+	 * the serial version id.
+	 */
+	private static final long serialVersionUID = -7663958469205304407L;
 
 	/**
 	 * the key of system properties.<br/>
