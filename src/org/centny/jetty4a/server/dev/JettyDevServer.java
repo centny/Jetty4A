@@ -25,14 +25,14 @@ public class JettyDevServer extends JettyServer {
 	 */
 	public JettyDevServer(File wsdir, File deploy, int port) {
 		super(wsdir, deploy, port);
-		this.loadWebApp(new File("."), new File(".", "WebContent/WEB-INF"));
+		this.loadWebApp(new File("."), new File("WebContent/WEB-INF"));
 	}
 
 	/**
 	 * initial ENV for develop in web project.
 	 */
 	public static void initWebDev() {
-		File root = new File(".", "Jetty4ADev");
+		File root = new File("Jetty4ADev");
 		if (!root.exists()) {
 			root.mkdirs();
 		}

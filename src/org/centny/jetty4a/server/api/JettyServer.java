@@ -431,7 +431,7 @@ public class JettyServer extends Server {
 				e.printStackTrace();
 			}
 		}
-		sl.init(root, croot, droot);
+		sl.init(root, croot, droot, webp);
 		try {
 			Handler h = sl.create(tcl, webp);
 			if (h != null) {
@@ -460,8 +460,8 @@ public class JettyServer extends Server {
 				}
 				wapp.setResourceBase(wc.getAbsolutePath());
 			}
-			if (webp.containsKey("WebContentPath")) {
-				wapp.setContextPath(webp.getProperty("WebContentPath"));
+			if (webp.containsKey("WebContextPath")) {
+				wapp.setContextPath(webp.getProperty("WebContextPath"));
 			} else {
 				wapp.setContextPath("/" + name);
 			}

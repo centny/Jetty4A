@@ -67,7 +67,7 @@ public class EnvXml {
 	 *            the target file to save.
 	 */
 	public void convert(File src, File dst) {
-		if (!(src.exists() && dst.exists())) {
+		if (!src.exists()) {
 			return;
 		}
 		FileInputStream is = null;

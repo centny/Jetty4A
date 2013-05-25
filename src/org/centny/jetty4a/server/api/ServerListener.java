@@ -70,8 +70,10 @@ public class ServerListener implements Serializable {
 	 *            the configure root path for WebApp physical path.
 	 * @param droot
 	 *            the runtime data root path for WebApp physical path.
+	 * @param webp
+	 *            the web.properties and environments.
 	 */
-	public void init(File root, File croot, File droot) {
+	public void init(File root, File croot, File droot, Properties webp) {
 
 	}
 
@@ -82,7 +84,7 @@ public class ServerListener implements Serializable {
 	 *            the class loader already load all classes in lib and classes
 	 *            folder.
 	 * @param webp
-	 *            the web.properties.
+	 *            the web.properties and environments.
 	 * @return a context handler.
 	 */
 	public Handler create(ClassLoader loader, Properties webp) {
@@ -95,7 +97,7 @@ public class ServerListener implements Serializable {
 	 * @param wapp
 	 *            the target WebAppContext.
 	 * @param webp
-	 *            the web.properties.
+	 *            the web.properties and environments.
 	 */
 	public void initWebApp(WebAppContext wapp, Properties webp) {
 	}
