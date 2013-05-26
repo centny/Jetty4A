@@ -36,8 +36,8 @@ public class JettyCfgAndroid extends JettyBaseCfg {
 	 * configure all.
 	 */
 	static {
-		JettyBaseCfg.loadJett4ACfg();
 		initJettyServerEnv();
+		JettyBaseCfg.loadJett4ACfg();
 		Jetty4ALog.loadCfg(System.getProperties());
 	}
 
