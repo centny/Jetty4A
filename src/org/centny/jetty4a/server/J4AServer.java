@@ -8,6 +8,10 @@ import dalvik.system.DexClassLoader;
 
 public class J4AServer extends JettyServer {
 
+	public J4AServer(File wsdir, File deploy) {
+		super(wsdir, deploy);
+	}
+
 	public J4AServer(File wsdir, File deploy, int port) {
 		super(wsdir, deploy, port);
 	}

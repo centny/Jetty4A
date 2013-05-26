@@ -22,6 +22,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
         android:onClick="onClk"
-        android:text="Button" />
+        android:text="Stopped" />
 
 </RelativeLayout>

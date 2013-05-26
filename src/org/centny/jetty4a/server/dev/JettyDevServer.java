@@ -23,6 +23,21 @@ public class JettyDevServer extends JettyServer {
 	 * @param port
 	 *            the listen port.
 	 */
+	public JettyDevServer(File wsdir, File deploy) {
+		super(wsdir, deploy);
+		this.loadWebApp(new File("."), new File("WebContent/WEB-INF"));
+	}
+
+	/**
+	 * the default constructor.
+	 * 
+	 * @param wsdir
+	 *            the workspace directory.
+	 * @param deploy
+	 *            the deploy directory.
+	 * @param port
+	 *            the listen port.
+	 */
 	public JettyDevServer(File wsdir, File deploy, int port) {
 		super(wsdir, deploy, port);
 		this.loadWebApp(new File("."), new File("WebContent/WEB-INF"));

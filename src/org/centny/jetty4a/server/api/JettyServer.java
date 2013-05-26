@@ -48,6 +48,32 @@ public class JettyServer extends Server {
 	 *            target port.
 	 * @return the JettyServer instance.
 	 */
+	public static JettyServer createServer(Class<?> js) {
+		File wsdir = new File(System.getProperties().getProperty(
+				ServerListener.J4A_WDIR));
+		File dpdir = new File(System.getProperties().getProperty(
+				ServerListener.J4A_DDIR));
+		if (wsdir.exists() && dpdir.exists()) {
+			try {
+				Constructor<?> ctr = js.getConstructor(File.class, File.class);
+				return (JettyServer) ctr.newInstance(wsdir, dpdir);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		} else {
+			System.err.println("workspace or deploy not exist.");
+			return null;
+		}
+	}
+
+	/**
+	 * create a server in port by system properties.
+	 * 
+	 * @param port
+	 *            target port.
+	 * @return the JettyServer instance.
+	 */
 	public static JettyServer createServer(Class<?> js, int port) {
 		File wsdir = new File(System.getProperties().getProperty(
 				ServerListener.J4A_WDIR));
@@ -87,11 +113,28 @@ public class JettyServer extends Server {
 	 *            the workspace directory.
 	 * @param deploy
 	 *            the deploy directory.
+	 */
+	public JettyServer(File wsdir, File deploy) {
+		super();
+		this.init(wsdir, deploy);
+	}
+
+	/**
+	 * the default constructor.
+	 * 
+	 * @param wsdir
+	 *            the workspace directory.
+	 * @param deploy
+	 *            the deploy directory.
 	 * @param port
 	 *            the listen port.
 	 */
 	public JettyServer(File wsdir, File deploy, int port) {
 		super(port);
+		this.init(wsdir, deploy);
+	}
+
+	private void init(File wsdir, File deploy) {
 		this.wsdir = wsdir;
 		this.dydir = deploy;
 		this.log.info("workspace:" + this.wsdir.getAbsoluteFile() + ",deploy:"
