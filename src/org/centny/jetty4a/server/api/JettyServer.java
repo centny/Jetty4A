@@ -104,6 +104,30 @@ public class JettyServer extends Server {
 					+ this.wsdir.getAbsolutePath() + " error");
 		}
 		this.setHandler(this.contexts);
+		this.loadEnv();
+	}
+
+	/**
+	 * load the environment configure file.
+	 */
+	public void loadEnv() {
+		String cdirPath = System.getProperty(ServerListener.J4A_CDIR);
+		if (cdirPath == null) {
+			return;
+		}
+		File cdir = new File(cdirPath);
+		if (!cdir.exists()) {
+			return;
+		}
+		File env = new File(cdir, "env.properties");
+		if (!cdir.exists()) {
+			return;
+		}
+		try {
+			System.getProperties().load(new FileInputStream(env));
+		} catch (Exception e) {
+			this.log.warn("loading env.properties error:", e);
+		}
 	}
 
 	/**
