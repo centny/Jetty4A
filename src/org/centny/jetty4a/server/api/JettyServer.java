@@ -124,7 +124,11 @@ public class JettyServer extends Server {
 			return;
 		}
 		try {
-			System.getProperties().load(new FileInputStream(env));
+			EnvProperties envp = new EnvProperties();
+			envp.load(new FileInputStream(env));
+			for (Object key : envp.keySet()) {
+				System.getProperties().put(key, envp.get(key));
+			}
 		} catch (Exception e) {
 			this.log.warn("loading env.properties error:", e);
 		}
