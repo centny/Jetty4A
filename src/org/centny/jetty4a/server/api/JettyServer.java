@@ -349,7 +349,11 @@ public class JettyServer extends Server {
 
 			@Override
 			public boolean accept(File pathname) {
-				return !names.contains(pathname.getName());
+				if (pathname.isFile()) {
+					return false;
+				} else {
+					return !names.contains(pathname.getName());
+				}
 			}
 		});
 		if (oldpkg == null) {
