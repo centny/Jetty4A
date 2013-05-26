@@ -21,7 +21,7 @@
 					<include name="**/*.jar" />
 				</fileset>
 				<fileset dir="${wlib.dir}">
-					<include name="*.jar" />
+					<include name="**/*.jar" />
 				</fileset>
 			</classpath>
 			<exclude name="**/*Test.java" />
