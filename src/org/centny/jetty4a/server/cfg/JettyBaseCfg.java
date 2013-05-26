@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.centny.jetty4a.server.api.ServerListener;
-import org.eclipse.jetty.util.IO;
 
 /**
  * the Jetty4A base configure method.
@@ -30,7 +29,13 @@ public class JettyBaseCfg {
 				System.err.println("Unable to load " + testProps);
 				e.printStackTrace(System.err);
 			} finally {
-				IO.close(in);
+				try {
+					if (in != null) {
+						in.close();
+					}
+				} catch (Exception e) {
+
+				}
 			}
 		}
 	}

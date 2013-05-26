@@ -46,6 +46,64 @@ public class Jetty4ALog extends AbstractLogger {
 		}
 	}
 
+	/**
+	 * Get the Logging Level for the provided log name. Using the FQCN first,
+	 * then each package segment from longest to shortest.
+	 * 
+	 * @param props
+	 *            the properties to check
+	 * @param name
+	 *            the name to get log for
+	 * @return the logging level
+	 */
+	public static int getLoggingLevel(Properties props, final String name) {
+		// Calculate the level this named logger should operate under.
+		// Checking with FQCN first, then each package segment from longest to
+		// shortest.
+		String nameSegment = name;
+
+		while ((nameSegment != null) && (nameSegment.length() > 0)) {
+			String levelStr = props.getProperty(nameSegment + ".LEVEL");
+			// System.err.printf("[StdErrLog.CONFIG] Checking for property [%s.LEVEL] = %s%n",nameSegment,levelStr);
+			int level = getLevelId(nameSegment + ".LEVEL", levelStr);
+			if (level != (-1)) {
+				return level;
+			}
+
+			// Trim and try again.
+			int idx = nameSegment.lastIndexOf('.');
+			if (idx >= 0) {
+				nameSegment = nameSegment.substring(0, idx);
+			} else {
+				nameSegment = null;
+			}
+		}
+
+		// Default Logging Level
+		return CFG_LEVEL;
+	}
+
+	protected static int getLevelId(String levelSegment, String levelName) {
+		if (levelName == null) {
+			return -1;
+		}
+		String levelStr = levelName.trim();
+		if ("ALL".equalsIgnoreCase(levelStr)) {
+			return LEVEL_ALL;
+		} else if ("DEBUG".equalsIgnoreCase(levelStr)) {
+			return LEVEL_DEBUG;
+		} else if ("INFO".equalsIgnoreCase(levelStr)) {
+			return LEVEL_INFO;
+		} else if ("WARN".equalsIgnoreCase(levelStr)) {
+			return LEVEL_WARN;
+		}
+
+		System.err.println("Unknown StdErrLog level [" + levelSegment + "]=["
+				+ levelStr
+				+ "], expecting only [ALL, DEBUG, INFO, WARN] as values.");
+		return -1;
+	}
+
 	private String name;
 	private boolean debugEnabled;
 	private int level;
@@ -57,12 +115,16 @@ public class Jetty4ALog extends AbstractLogger {
 
 	public Jetty4ALog(String name) {
 		this.name = name;
-		this.level = CFG_LEVEL;
+		this.level = getLoggingLevel(System.getProperties(), this.name);
 		for (Class<?> cls : LOG_CLASSES) {
 			try {
-				Constructor<?> con = cls.getConstructor(String.class);
-				AbstractLogger log = (AbstractLogger) con
-						.newInstance(this.name);
+				AbstractLogger log;
+				if (this.name == null) {
+					log = (AbstractLogger) cls.newInstance();
+				} else {
+					Constructor<?> con = cls.getConstructor(String.class);
+					log = (AbstractLogger) con.newInstance(this.name);
+				}
 				this.logs.add(log);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -111,7 +173,7 @@ public class Jetty4ALog extends AbstractLogger {
 	public void info(Throwable arg0) {
 		if (this.level <= LEVEL_INFO) {
 			for (AbstractLogger log : this.logs) {
-				log.debug(arg0);
+				log.info(arg0);
 			}
 		}
 	}
@@ -120,7 +182,7 @@ public class Jetty4ALog extends AbstractLogger {
 	public void info(String arg0, Object... arg1) {
 		if (this.level <= LEVEL_INFO) {
 			for (AbstractLogger log : this.logs) {
-				log.debug(arg0, arg1);
+				log.info(arg0, arg1);
 			}
 		}
 	}
@@ -129,7 +191,7 @@ public class Jetty4ALog extends AbstractLogger {
 	public void info(String arg0, Throwable arg1) {
 		if (this.level <= LEVEL_INFO) {
 			for (AbstractLogger log : this.logs) {
-				log.debug(arg0, arg1);
+				log.info(arg0, arg1);
 			}
 		}
 	}
@@ -148,7 +210,7 @@ public class Jetty4ALog extends AbstractLogger {
 	public void warn(Throwable arg0) {
 		if (this.level <= LEVEL_WARN) {
 			for (AbstractLogger log : this.logs) {
-				log.debug(arg0);
+				log.warn(arg0);
 			}
 		}
 	}
@@ -157,7 +219,7 @@ public class Jetty4ALog extends AbstractLogger {
 	public void warn(String arg0, Object... arg1) {
 		if (this.level <= LEVEL_WARN) {
 			for (AbstractLogger log : this.logs) {
-				log.debug(arg0, arg1);
+				log.warn(arg0, arg1);
 			}
 		}
 	}
@@ -166,7 +228,7 @@ public class Jetty4ALog extends AbstractLogger {
 	public void warn(String arg0, Throwable arg1) {
 		if (this.level <= LEVEL_WARN) {
 			for (AbstractLogger log : this.logs) {
-				log.debug(arg0, arg1);
+				log.warn(arg0, arg1);
 			}
 		}
 	}
