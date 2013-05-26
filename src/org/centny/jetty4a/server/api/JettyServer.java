@@ -120,7 +120,7 @@ public class JettyServer extends Server {
 			return;
 		}
 		File env = new File(cdir, "env.properties");
-		if (!cdir.exists()) {
+		if (!env.exists()) {
 			return;
 		}
 		try {
