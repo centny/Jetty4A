@@ -59,6 +59,7 @@ public class JettyActivity extends Activity {
 		// for (String n : new File(getApplicationContext().getFilesDir()
 		// .getAbsolutePath()).list()) {
 		// Log.d("File", n);
+		// "[ss]".matches("^\\[\\s*remote\\s*\\]$");
 		// }
 		if (js != null) {
 			try {
