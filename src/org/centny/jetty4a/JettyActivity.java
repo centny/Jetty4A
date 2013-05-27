@@ -1,5 +1,6 @@
 package org.centny.jetty4a;
 
+import org.centny.jetty4a.server.ADnsDynamic;
 import org.centny.jetty4a.server.J4AServer;
 import org.centny.jetty4a.server.JettyCfgAndroid;
 import org.centny.jetty4a.server.api.JettyServer;
@@ -33,6 +34,13 @@ public class JettyActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jetty);
 		JettyCfgAndroid.initJServerWs(this.getApplicationContext());
+		ADnsDynamic dd = ADnsDynamic.sharedInstance();
+		dd.setHost("git.dnsd.me");
+		dd.setUsr("centny@gmail.com");
+		dd.setPwd("wsh123456");
+		dd.setPeriod(300000);
+		dd.startTimer();
+		dd.startNetworkListener(this);
 	}
 
 	@Override
@@ -54,6 +62,25 @@ public class JettyActivity extends Activity {
 	 *            button view.
 	 */
 	public void onClk(View v) {
+		// WifiManager wifimanage = (WifiManager) this
+		// .getSystemService(Context.WIFI_SERVICE);// 获取WifiManager
+		//
+		// if (!wifimanage.isWifiEnabled()) {
+		// wifimanage.setWifiEnabled(true);
+		// }
+		//
+		// WifiInfo wifiinfo = wifimanage.getConnectionInfo();
+		// String ip = intToIp(wifiinfo.getIpAddress());
+		// DnsDynamic dd = ADnsDynamic.sharedInstance();
+		// try {
+		// dd.setHost("git.dnsd.me");
+		// dd.setMyip(ip);
+		// dd.setUsr("centny@gmail.com");
+		// dd.setPwd("wsh123456");
+		// dd.startTimer(300000);
+		// } catch (Exception e) {
+		//
+		// }
 		// Log.d("File",
 		// getApplicationContext().getFilesDir().getAbsolutePath());
 		// for (String n : new File(getApplicationContext().getFilesDir()
