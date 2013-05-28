@@ -1,4 +1,4 @@
-package org.centny.jetty4a.server;
+package org.centny.jetty4a.server.log;
 
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
@@ -21,7 +21,7 @@ public class Jetty4ALog extends AbstractLogger {
 		if (pro == null) {
 			return;
 		}
-		String level = pro.getProperty("ANDROID_LOG_LEVEL", "INFO");
+		String level = pro.getProperty("J4A_LOG_LEVEL", "INFO");
 		if (level.equals("ALL")) {
 			CFG_LEVEL = LEVEL_ALL;
 		} else if (level.equals("DEBUG")) {
@@ -33,7 +33,7 @@ public class Jetty4ALog extends AbstractLogger {
 		} else {
 			CFG_LEVEL = LEVEL_INFO;
 		}
-		String cls = pro.getProperty("ANDROID_LOG_CLASSES",
+		String cls = pro.getProperty("J4A_LOG_CLASSES",
 				"com.centny.jetty4.server.JettyLogCatLog");
 		String[] classes = cls.split("[\\;\\:\\|]");
 		for (String name : classes) {

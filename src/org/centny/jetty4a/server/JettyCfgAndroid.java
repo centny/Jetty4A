@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.centny.jetty4a.server.cfg.JettyBaseCfg;
+import org.centny.jetty4a.server.log.Jetty4ALog;
 import org.eclipse.jetty.util.IO;
 import org.slf4j.LoggerFactory;
 

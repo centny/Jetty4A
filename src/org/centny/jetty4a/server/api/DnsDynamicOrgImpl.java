@@ -54,7 +54,7 @@ public class DnsDynamicOrgImpl implements DnsDynamic.Listener {
 				sb.append(line);
 				sb.append("\n");
 			}
-			this.log.info("DnsDynamic response:" + sb.toString());
+			this.log.info("DnsDynamic response:" + sb.toString().trim());
 		} catch (Exception e) {
 			this.log.warn("DnsDynamic request error:" + e.getMessage());
 		} finally {

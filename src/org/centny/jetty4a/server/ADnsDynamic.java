@@ -57,7 +57,7 @@ public class ADnsDynamic extends DnsDynamic {
 	public void loadExtListener() {
 		try {
 			String ddl = System.getProperty("j4a.dnsdynamic.class");
-			if (ddl == null || ddl.trim().isEmpty()) {
+			if (ddl == null || ddl.trim().length() < 1) {
 				return;
 			}
 			String wdir = System.getProperty(ServerListener.J4A_WDIR);
