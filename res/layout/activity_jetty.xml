@@ -11,6 +11,7 @@
 
         <TextView
             android:id="@+id/title_v"
+            android:layout_marginLeft="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -20,8 +21,8 @@
             android:id="@+id/status_v"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/title_v"
             android:layout_marginTop="18dp"
+            android:layout_toRightOf="@+id/title_v"
             android:textSize="12sp" />
 
         <Button
@@ -30,15 +31,20 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
             android:background="@drawable/start_btn_selector"
             android:onClick="onClk"
-            android:padding="5dp"
-            android:layout_marginRight="5dp"
+            android:paddingBottom="1dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="1dp"
             android:text="@string/abtn_text" />
     </RelativeLayout>
 
     <ScrollView
         android:id="@+id/sv_show"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/j4a_head"

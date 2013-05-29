@@ -3,14 +3,11 @@ package org.centny.jetty4a;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.centny.cny4a.util.Util;
-import org.centny.jetty4a.server.ADnsDynamic;
-import org.centny.jetty4a.server.J4AServer;
-import org.centny.jetty4a.server.J4AServer.ServerStatus;
-import org.centny.jetty4a.server.JettyCfgAndroid;
+import org.centny.jetty4a.J4AService.ServerStatus;
 import org.centny.jetty4a.server.log.MemoryLog;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,8 +17,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.centny.jetty4a.R;
-
 /**
  * the main activity.
  * 
@@ -29,11 +24,6 @@ import com.centny.jetty4a.R;
  * 
  */
 public class JettyActivity extends Activity {
-
-	static {
-		System.out.println(JettyCfgAndroid.class);// for load static configure.
-		JettyCfgAndroid.loadAll();
-	}
 
 	private TextView logv;
 	private TextView titlev;
@@ -57,22 +47,11 @@ public class JettyActivity extends Activity {
 		statush.aty = this;
 		this.titlev.setText("Jetty Server");
 		this.startLogTimer();
-		//
-		JettyCfgAndroid.initJServerWs(this.getApplicationContext());
-		ADnsDynamic dd = ADnsDynamic.sharedInstance();
-		dd.setHost("git.dnsd.me");
-		dd.setUsr("centny@gmail.com");
-		dd.setPwd("wsh123456");
-		dd.setPeriod(300000);
-		dd.startTimer();
-		dd.startNetworkListener(this);
-		J4AServer.createSharedServer();
-		J4AServer.send(statush, ServerStatus.Stopped);
+		J4AService.setHandler(statush);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.jetty, menu);
 		return true;
 	}
@@ -84,74 +63,11 @@ public class JettyActivity extends Activity {
 	 *            button view.
 	 */
 	public void onClk(View v) {
-		if (J4AServer.isSharedServerStartted()) {
-			J4AServer.stopSharedServer(statush);
+		if (J4AService.isSharedServerStartted()) {
+			stopService(new Intent(this, J4AService.class));
 		} else {
-			J4AServer.startSharedServer(statush);
+			startService(new Intent(this, J4AService.class));
 		}
-		// WifiManager wifimanage = (WifiManager) this
-		// .getSystemService(Context.WIFI_SERVICE);// 获取WifiManager
-		//
-		// if (!wifimanage.isWifiEnabled()) {
-		// wifimanage.setWifiEnabled(true);
-		// }
-		//
-		// WifiInfo wifiinfo = wifimanage.getConnectionInfo();
-		// String ip = intToIp(wifiinfo.getIpAddress());
-		// DnsDynamic dd = ADnsDynamic.sharedInstance();
-		// try {
-		// dd.setHost("git.dnsd.me");
-		// dd.setMyip(ip);
-		// dd.setUsr("centny@gmail.com");
-		// dd.setPwd("wsh123456");
-		// dd.startTimer(300000);
-		// } catch (Exception e) {
-		//
-		// }
-		// Log.d("File",
-		// getApplicationContext().getFilesDir().getAbsolutePath());
-		// for (String n : new File(getApplicationContext().getFilesDir()
-		// .getAbsolutePath()).list()) {
-		// Log.d("File", n);
-		// "[ss]".matches("^\\[\\s*remote\\s*\\]$");
-		// }
-		// if (js != null) {
-		// try {
-		// js.stop();
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
-		// js = null;
-		// Log.d("Server", "stopped");
-		// ((Button) v).setText("Stopped");
-		// } else {
-		// File wdir = new File(Environment.getExternalStorageDirectory(),
-		// "webapp");
-		// if (!wdir.exists()) {
-		// wdir.mkdirs();
-		// }
-		// Log.d("Server", this.getApplicationContext().getFilesDir()
-		// .getAbsolutePath());
-		// Log.d("Server", wdir.getAbsolutePath());
-		// ((Button) v).setText("Started");
-		// js = JettyServer.createServer(J4AServer.class);
-		// QueuedThreadPool threadPool = new QueuedThreadPool();
-		// threadPool.setMaxThreads(10);
-		// SelectChannelConnector connector = new SelectChannelConnector();
-		// connector.setThreadPool(threadPool);
-		// connector.setPort(8080);
-		// js.addConnector(connector);
-		// try {
-		// Log.d("Server", "check deploy...");
-		// js.checkDeploy();
-		// Log.d("Server", "load web context...");
-		// js.loadWebContext();
-		// Log.d("Server", "starting...");
-		// js.start();
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
-		// }
 	}
 
 	private static class StatusHandler extends Handler {
@@ -159,23 +75,32 @@ public class JettyActivity extends Activity {
 		public TextView statusv;
 		public Button startBtn;
 
-		private String localListener() {
-			String ip = Util.localIpAddress(aty);
-			if (ip == null) {
-				ip = "0.0.0.0";
-			}
-			return ip + ":" + J4AServer.listenPort();
-		}
-
 		@Override
 		public void handleMessage(Message msg) {
 			if (msg.obj == null || !(msg.obj instanceof ServerStatus)) {
 				return;
 			}
 			ServerStatus status = (ServerStatus) msg.obj;
-			this.startBtn.setText(status.toString());
+			switch (status) {
+			case Stopped:
+				this.startBtn.setText("Start");
+				this.startBtn.setEnabled(true);
+				break;
+			case Stopping:
+				this.startBtn.setText("Start");
+				this.startBtn.setEnabled(false);
+				break;
+			case Started:
+				this.startBtn.setText("Stop");
+				this.startBtn.setEnabled(true);
+				break;
+			case Starting:
+				this.startBtn.setText("Starting");
+				this.startBtn.setEnabled(false);
+				break;
+			}
 			this.statusv.setText("(" + status.toString() + ","
-					+ this.localListener() + ")");
+					+ J4AService.localListener(aty) + ")");
 		}
 
 	}
@@ -205,5 +130,12 @@ public class JettyActivity extends Activity {
 			logv.setText(MemoryLog.allLog());
 		}
 
+	}
+
+	@Override
+	protected void onDestroy() {
+		J4AService.setHandler(null);
+		super.onDestroy();
 	};
+
 }

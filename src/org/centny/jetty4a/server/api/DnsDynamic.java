@@ -55,7 +55,7 @@ public abstract class DnsDynamic extends TimerTask {
 
 	public void startTimer() {
 		if (this.period < 5000) {
-			this.log.warn("the dns period configure less 5000,ignored.");
+			this.log.warn("the dns period configure less 5000,DnsDynamic will not start.");
 			return;
 		}
 		if (this.listeners.isEmpty()) {

@@ -7,9 +7,9 @@ import org.centny.jetty4a.server.api.DnsDynamic;
 import org.centny.jetty4a.server.api.ServerListener;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
@@ -43,7 +43,7 @@ public class ADnsDynamic extends DnsDynamic {
 
 	//
 	private NetworkChangedReceiver receiver;
-	private Activity aty;
+	private ContextWrapper ctx;
 	private boolean only4Wifi;
 
 	/**
@@ -90,28 +90,28 @@ public class ADnsDynamic extends DnsDynamic {
 	 */
 	@Override
 	protected void preUpdate() {
-		if (this.aty != null) {
-			this.setMyip(Util.localIpAddress(this.aty, this.only4Wifi));
+		if (this.ctx != null) {
+			this.setMyip(Util.localIpAddress(this.ctx, this.only4Wifi));
 		} else {
 			this.setMyip(null);
 		}
 	}
 
-	public void startNetworkListener(Activity aty) {
+	public void startNetworkListener(ContextWrapper ctx) {
 		this.receiver = new NetworkChangedReceiver(this);
-		this.aty = aty;
+		this.ctx = ctx;
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-		this.aty.registerReceiver(this.receiver, filter);
+		this.ctx.registerReceiver(this.receiver, filter);
 	}
 
 	public void stopNetworkListener() {
 		if (this.receiver == null) {
 			return;
 		}
-		this.aty.unregisterReceiver(this.receiver);
+		this.ctx.unregisterReceiver(this.receiver);
 		this.receiver = null;
-		this.aty = null;
+		this.ctx = null;
 	}
 
 	private void onNetworkChanged() {
