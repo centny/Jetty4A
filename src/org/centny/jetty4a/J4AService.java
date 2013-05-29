@@ -190,5 +190,6 @@ public class J4AService extends Service {
 		}
 		dimissNotificationMessage();
 		ADnsDynamic.sharedInstance().stopNetworkListener();
+		ADnsDynamic.sharedInstance().stopTimer();
 	}
 }
