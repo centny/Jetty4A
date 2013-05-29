@@ -83,17 +83,17 @@ public class MemoryLog extends AbstractLogger {
 
 	@Override
 	public void debug(Throwable arg0) {
-		this.addLog("DEBUG", arg0.getMessage());
+		this.addLog("D ", arg0.getMessage());
 	}
 
 	@Override
 	public void debug(String arg0, Object... arg1) {
-		this.addLog("DEBUG", format(arg0, arg1));
+		this.addLog("D ", format(arg0, arg1));
 	}
 
 	@Override
 	public void debug(String arg0, Throwable arg1) {
-		this.addLog("DEBUG", arg0 + " " + arg1.getMessage());
+		this.addLog("D ", arg0 + " " + arg1.getMessage());
 	}
 
 	@Override
@@ -108,17 +108,17 @@ public class MemoryLog extends AbstractLogger {
 
 	@Override
 	public void info(Throwable arg0) {
-		this.addLog("INFO  ", arg0.getMessage());
+		this.addLog("I  ", arg0.getMessage());
 	}
 
 	@Override
 	public void info(String arg0, Object... arg1) {
-		this.addLog("INFO  ", format(arg0, arg1));
+		this.addLog("I  ", format(arg0, arg1));
 	}
 
 	@Override
 	public void info(String arg0, Throwable arg1) {
-		this.addLog("INFO  ", arg0 + " " + arg1.getMessage());
+		this.addLog("I  ", arg0 + " " + arg1.getMessage());
 	}
 
 	@Override
@@ -133,17 +133,17 @@ public class MemoryLog extends AbstractLogger {
 
 	@Override
 	public void warn(Throwable arg0) {
-		this.addLog("WARN  ", arg0.getMessage());
+		this.addLog("W", arg0.getMessage());
 	}
 
 	@Override
 	public void warn(String arg0, Object... arg1) {
-		this.addLog("WARN  ", format(arg0, arg1));
+		this.addLog("W", format(arg0, arg1));
 	}
 
 	@Override
 	public void warn(String arg0, Throwable arg1) {
-		this.addLog("WARN  ", arg0 + " " + arg1.getMessage());
+		this.addLog("W", arg0 + " " + arg1.getMessage());
 	}
 
 	@Override

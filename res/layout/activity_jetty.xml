@@ -12,13 +12,17 @@
         <TextView
             android:id="@+id/title_v"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/status_v"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/title_v" />
+            android:layout_toRightOf="@+id/title_v"
+            android:layout_marginTop="18dp"
+            android:textSize="12sp" />
 
         <Button
             android:id="@+id/startBtn"
@@ -29,6 +33,7 @@
             android:background="@drawable/start_btn_selector"
             android:onClick="onClk"
             android:padding="5dp"
+            android:layout_marginRight="5dp"
             android:text="@string/abtn_text" />
     </RelativeLayout>
 

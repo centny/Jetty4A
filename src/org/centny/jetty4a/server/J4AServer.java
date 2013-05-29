@@ -87,6 +87,10 @@ public class J4AServer extends JettyServer {
 			slog.warn("shared server is not initial,call createSharedServer first");
 			return;
 		}
+		if (!sharedServer__.isStarted()) {
+			slog.warn("shared server is not started,call start first");
+			return;
+		}
 		new Thread(new Runnable() {
 
 			@Override

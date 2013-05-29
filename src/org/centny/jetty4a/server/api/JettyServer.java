@@ -364,7 +364,7 @@ public class JettyServer extends Server {
 				String fmd5 = checkMd5(zip);
 				if (df.exists()) {
 					String dmd5 = readMd5(df);
-//					dmd5 = "";
+					// dmd5 = "";
 					if (dmd5.equals(fmd5)) {
 						deploy = false;
 					} else {

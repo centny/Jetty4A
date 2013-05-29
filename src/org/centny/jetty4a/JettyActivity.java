@@ -67,6 +67,7 @@ public class JettyActivity extends Activity {
 		dd.startTimer();
 		dd.startNetworkListener(this);
 		J4AServer.createSharedServer();
+		J4AServer.send(statush, ServerStatus.Stopped);
 	}
 
 	@Override
@@ -84,9 +85,9 @@ public class JettyActivity extends Activity {
 	 */
 	public void onClk(View v) {
 		if (J4AServer.isSharedServerStartted()) {
-			J4AServer.startSharedServer(statush);
-		} else {
 			J4AServer.stopSharedServer(statush);
+		} else {
+			J4AServer.startSharedServer(statush);
 		}
 		// WifiManager wifimanage = (WifiManager) this
 		// .getSystemService(Context.WIFI_SERVICE);// 获取WifiManager
@@ -174,7 +175,7 @@ public class JettyActivity extends Activity {
 			ServerStatus status = (ServerStatus) msg.obj;
 			this.startBtn.setText(status.toString());
 			this.statusv.setText("(" + status.toString() + ","
-					+ this.localListener());
+					+ this.localListener() + ")");
 		}
 
 	}
