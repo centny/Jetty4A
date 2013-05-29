@@ -83,32 +83,6 @@ public class J4AService extends Service {
 
 	@Override
 	public void onCreate() {
-		if (isSharedServerStartted()) {
-			return;
-		}
-		JettyCfgAndroid.initJServerWs(this.getApplicationContext());
-		try {
-			try {
-				String sport = System.getProperty("J4A_LISTEN_PORT");
-				listenPort__ = Integer.parseInt(sport);
-			} catch (Exception e) {
-				listenPort__ = 8080;
-				this.log.debug("listen port configure not found,using default:"
-						+ listenPort__);
-			}
-			sharedServer__ = (J4AServer) JettyServer
-					.createServer(J4AServer.class);
-			QueuedThreadPool threadPool = new QueuedThreadPool();
-			threadPool.setMaxThreads(10);
-			SelectChannelConnector connector = new SelectChannelConnector();
-			connector.setThreadPool(threadPool);
-			connector.setPort(listenPort__);
-			sharedServer__.addConnector(connector);
-			this.log.info("initial shared server in port:" + listenPort__);
-		} catch (Exception e) {
-			this.log.warn("initial shared server error", e);
-			sharedServer__ = null;
-		}
 	}
 
 	@SuppressLint("NewApi")
@@ -142,20 +116,43 @@ public class J4AService extends Service {
 		if (isSharedServerStartted()) {
 			return 0;
 		}
-		if (sharedServer__ == null) {
-			this.log.warn("shared server is not initial,call createSharedServer first");
-			return 0;
-		}
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				try {
+					JettyCfgAndroid.initJServerWs(getApplicationContext());
+					try {
+						try {
+							String sport = System
+									.getProperty("J4A_LISTEN_PORT");
+							listenPort__ = Integer.parseInt(sport);
+						} catch (Exception e) {
+							listenPort__ = 8080;
+							log.debug("listen port configure not found,using default:"
+									+ listenPort__);
+						}
+						sharedServer__ = (J4AServer) JettyServer
+								.createServer(J4AServer.class);
+						QueuedThreadPool threadPool = new QueuedThreadPool();
+						threadPool.setMaxThreads(10);
+						SelectChannelConnector connector = new SelectChannelConnector();
+						connector.setThreadPool(threadPool);
+						connector.setPort(listenPort__);
+						sharedServer__.addConnector(connector);
+						log.info("initial shared server in port:"
+								+ listenPort__);
+					} catch (Exception e) {
+						log.warn("initial shared server error", e);
+						sharedServer__ = null;
+					}
 					ADnsDynamic dd = ADnsDynamic.sharedInstance();
 					// dd.setHost("git.dnsd.me");
 					// dd.setUsr("centny@gmail.com");
 					// dd.setPwd("wsh123456");
 					// dd.setPeriod(300000);
+					dd.loadDnsConfig();
+					dd.loadExtListener();
 					dd.startTimer();
 					dd.startNetworkListener(J4AService.this);
 					send(ServerStatus.Starting);

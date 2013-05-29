@@ -99,13 +99,18 @@ public abstract class DnsDynamic extends TimerTask {
 			this.usr = this.cfg.getProperty("USER");
 		}
 		if (this.cfg.containsKey("PASS")) {
-			this.usr = this.cfg.getProperty("PASS");
+			this.pwd = this.cfg.getProperty("PASS");
 		}
 		if (this.cfg.containsKey("HOST")) {
-			this.usr = this.cfg.getProperty("HOST");
+			this.host = this.cfg.getProperty("HOST");
 		}
 		if (this.cfg.containsKey("PERIOD")) {
-			this.usr = this.cfg.getProperty("PERIOD");
+			try {
+				String pstr = this.cfg.getProperty("PERIOD");
+				this.period = Long.parseLong(pstr);
+			} catch (Exception e) {
+				this.period = 0;
+			}
 		}
 	}
 

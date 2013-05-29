@@ -51,7 +51,6 @@ public class ADnsDynamic extends DnsDynamic {
 	 */
 	public ADnsDynamic() {
 		this.only4Wifi = true;
-		this.loadExtListener();
 	}
 
 	public void loadExtListener() {
