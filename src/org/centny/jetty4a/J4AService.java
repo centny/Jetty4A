@@ -113,7 +113,7 @@ public class J4AService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (isSharedServerStartted()) {
+		if (!ServerStatus.Stopped.equals(serverStatus__)) {
 			return 0;
 		}
 		new Thread(new Runnable() {
@@ -146,6 +146,10 @@ public class J4AService extends Service {
 						log.warn("initial shared server error", e);
 						sharedServer__ = null;
 					}
+					send(ServerStatus.Starting);
+					sharedServer__.start();
+					send(ServerStatus.Started);
+					displayNotificationMessage("Jetty Server Running...");
 					ADnsDynamic dd = ADnsDynamic.sharedInstance();
 					// dd.setHost("git.dnsd.me");
 					// dd.setUsr("centny@gmail.com");
@@ -155,10 +159,6 @@ public class J4AService extends Service {
 					dd.loadExtListener();
 					dd.startTimer();
 					dd.startNetworkListener(J4AService.this);
-					send(ServerStatus.Starting);
-					sharedServer__.start();
-					send(ServerStatus.Started);
-					displayNotificationMessage("Jetty Server Running...");
 				} catch (Exception e) {
 					send(ServerStatus.Stopped);
 					log.warn("start server error", e);
@@ -177,6 +177,9 @@ public class J4AService extends Service {
 		}
 		if (!sharedServer__.isStarted()) {
 			this.log.warn("shared server is not started,call start first");
+			return;
+		}
+		if (!ServerStatus.Started.equals(serverStatus__)) {
 			return;
 		}
 		try {

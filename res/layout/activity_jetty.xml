@@ -44,7 +44,6 @@
     <ScrollView
         android:id="@+id/sv_show"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/j4a_head"

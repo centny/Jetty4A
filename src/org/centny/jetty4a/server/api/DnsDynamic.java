@@ -18,7 +18,7 @@ import org.eclipse.jetty.util.log.Logger;
  * @author Centny.
  * 
  */
-public abstract class DnsDynamic extends TimerTask {
+public abstract class DnsDynamic {
 
 	public static interface Listener {
 		void update(DnsDynamic dns);
@@ -66,7 +66,13 @@ public abstract class DnsDynamic extends TimerTask {
 			this.remain = 0;
 		}
 		this.timer = new Timer();
-		this.timer.schedule(this, 0, 5000);
+		this.timer.schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+				dnsDynamic();
+			}
+		}, 0, 5000);
 	}
 
 	public void stopTimer() {
@@ -118,8 +124,7 @@ public abstract class DnsDynamic extends TimerTask {
 		this.listeners.add(l);
 	}
 
-	@Override
-	public void run() {
+	private void dnsDynamic() {
 		synchronized (this) {
 			if (this.remain > 0) {
 				this.remain -= 5000;
