@@ -70,7 +70,7 @@ public abstract class DnsDynamic {
 
 			@Override
 			public void run() {
-				dnsDynamic();
+				timerDnsDynamic();
 			}
 		}, 0, 5000);
 	}
@@ -124,7 +124,11 @@ public abstract class DnsDynamic {
 		this.listeners.add(l);
 	}
 
-	private void dnsDynamic() {
+	public void clearListeners() {
+		this.listeners.clear();
+	}
+
+	private void timerDnsDynamic() {
 		synchronized (this) {
 			if (this.remain > 0) {
 				this.remain -= 5000;
@@ -132,6 +136,10 @@ public abstract class DnsDynamic {
 			}
 			this.running = true;
 		}
+		this.dnsDynamic();
+	}
+
+	protected void dnsDynamic() {
 		this.log.debug("processing " + this.listeners.size() + " listener...");
 		this.preUpdate();
 		for (Listener l : this.listeners) {

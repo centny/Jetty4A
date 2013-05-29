@@ -157,8 +157,9 @@ public class J4AService extends Service {
 					// dd.setPeriod(300000);
 					dd.loadDnsConfig();
 					dd.loadExtListener();
-					dd.startTimer();
+					// dd.startTimer();
 					dd.startNetworkListener(J4AService.this);
+//					dd.updateDnsDynamic();
 				} catch (Exception e) {
 					send(ServerStatus.Stopped);
 					log.warn("start server error", e);
@@ -193,6 +194,6 @@ public class J4AService extends Service {
 		}
 		dimissNotificationMessage();
 		ADnsDynamic.sharedInstance().stopNetworkListener();
-		ADnsDynamic.sharedInstance().stopTimer();
+		// ADnsDynamic.sharedInstance().stopTimer();
 	}
 }

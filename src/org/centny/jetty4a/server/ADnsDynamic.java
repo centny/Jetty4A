@@ -55,6 +55,7 @@ public class ADnsDynamic extends DnsDynamic {
 
 	public void loadExtListener() {
 		try {
+			this.clearListeners();
 			String ddl = System.getProperty("j4a.dnsdynamic.class");
 			if (ddl == null || ddl.trim().length() < 1) {
 				return;
@@ -113,11 +114,22 @@ public class ADnsDynamic extends DnsDynamic {
 		this.ctx = null;
 	}
 
-	private void onNetworkChanged() {
+	public void updateDnsDynamic() {
 		if (this.isRunning()) {
 			return;
 		}
-		this.require();
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				dnsDynamic();
+			}
+
+		}).start();
+	}
+
+	private void onNetworkChanged() {
+		this.updateDnsDynamic();
 	}
 
 	/**
