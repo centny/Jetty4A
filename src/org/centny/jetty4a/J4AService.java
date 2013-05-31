@@ -5,10 +5,8 @@ import org.centny.jetty4a.server.ADnsDynamic;
 import org.centny.jetty4a.server.J4AServer;
 import org.centny.jetty4a.server.JettyCfgAndroid;
 import org.centny.jetty4a.server.api.JettyServer;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -132,14 +130,8 @@ public class J4AService extends Service {
 							log.debug("listen port configure not found,using default:"
 									+ listenPort__);
 						}
-						sharedServer__ = (J4AServer) JettyServer
-								.createServer(J4AServer.class);
-						QueuedThreadPool threadPool = new QueuedThreadPool();
-						threadPool.setMaxThreads(10);
-						SelectChannelConnector connector = new SelectChannelConnector();
-						connector.setThreadPool(threadPool);
-						connector.setPort(listenPort__);
-						sharedServer__.addConnector(connector);
+						sharedServer__ = (J4AServer) JettyServer.createServer(
+								J4AServer.class, listenPort__);
 						log.info("initial shared server in port:"
 								+ listenPort__);
 					} catch (Exception e) {
@@ -157,9 +149,9 @@ public class J4AService extends Service {
 					// dd.setPeriod(300000);
 					dd.loadDnsConfig();
 					dd.loadExtListener();
-					// dd.startTimer();
+					dd.startTimer();
 					dd.startNetworkListener(J4AService.this);
-//					dd.updateDnsDynamic();
+					// dd.updateDnsDynamic();
 				} catch (Exception e) {
 					send(ServerStatus.Stopped);
 					log.warn("start server error", e);
@@ -194,6 +186,6 @@ public class J4AService extends Service {
 		}
 		dimissNotificationMessage();
 		ADnsDynamic.sharedInstance().stopNetworkListener();
-		// ADnsDynamic.sharedInstance().stopTimer();
+		ADnsDynamic.sharedInstance().stopTimer();
 	}
 }

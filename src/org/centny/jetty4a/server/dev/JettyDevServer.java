@@ -1,9 +1,12 @@
 package org.centny.jetty4a.server.dev;
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 import org.centny.jetty4a.server.api.JettyServer;
 import org.centny.jetty4a.server.cfg.JettyBaseCfg;
+import org.centny.jetty4a.server.log.Jetty4ALog;
 
 /**
  * run Jetty server in web project for develop.
@@ -47,6 +50,8 @@ public class JettyDevServer extends JettyServer {
 	 * initial ENV for develop in web project.
 	 */
 	public static void initWebDev() {
+		JettyBaseCfg.loadJett4ACfg();
+		Jetty4ALog.loadCfg(System.getProperties());
 		File root = new File("Jetty4ADev");
 		if (!root.exists()) {
 			root.mkdirs();
@@ -58,6 +63,19 @@ public class JettyDevServer extends JettyServer {
 		}
 		JettyBaseCfg.initWsDir(wdir);
 
+	}
+
+	@Override
+	protected ClassLoader buildConnectorClassLoader(File jar, ClassLoader tcl) {
+		try {
+			URLClassLoader ucl = null;
+			ucl = new URLClassLoader(new URL[] { new URL("file://"
+					+ jar.getAbsolutePath()) }, tcl);
+			return ucl;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return tcl;
+		}
 	}
 
 }

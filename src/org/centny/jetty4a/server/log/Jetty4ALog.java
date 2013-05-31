@@ -34,10 +34,13 @@ public class Jetty4ALog extends AbstractLogger {
 			CFG_LEVEL = LEVEL_INFO;
 		}
 		String cls = pro.getProperty("J4A_LOG_CLASSES",
-				"com.centny.jetty4.server.JettyLogCatLog");
+				"org.eclipse.jetty.util.log.StdErrLog");
 		String[] classes = cls.split("[\\;\\:\\|]");
 		for (String name : classes) {
 			try {
+				if (name.trim().length() < 1) {
+					continue;
+				}
 				Class<?> logc = Loader.loadClass(Jetty4ALog.class, name.trim());
 				LOG_CLASSES.add(logc);
 			} catch (ClassNotFoundException e) {

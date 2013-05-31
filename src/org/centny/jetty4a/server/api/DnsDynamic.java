@@ -55,7 +55,7 @@ public abstract class DnsDynamic {
 
 	public void startTimer() {
 		if (this.period < 5000) {
-			this.log.warn("the dns period configure less 5000,DnsDynamic will not start.");
+			this.log.info("the dns period configure less 5000,DnsDynamic will not start.");
 			return;
 		}
 		if (this.listeners.isEmpty()) {
@@ -72,7 +72,7 @@ public abstract class DnsDynamic {
 			public void run() {
 				timerDnsDynamic();
 			}
-		}, 0, 5000);
+		}, 5000, 5000);
 	}
 
 	public void stopTimer() {
@@ -134,12 +134,31 @@ public abstract class DnsDynamic {
 				this.remain -= 5000;
 				return;
 			}
-			this.running = true;
 		}
 		this.dnsDynamic();
 	}
 
+	public void updateDnsDynamic() {
+		if (this.isRunning()) {
+			return;
+		}
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				dnsDynamic();
+			}
+
+		}).start();
+	}
+
 	protected void dnsDynamic() {
+		synchronized (this) {
+			if (this.running) {
+				return;
+			}
+			this.running = true;
+		}
 		this.log.debug("processing " + this.listeners.size() + " listener...");
 		this.preUpdate();
 		for (Listener l : this.listeners) {
@@ -156,7 +175,31 @@ public abstract class DnsDynamic {
 		}
 	}
 
+	public void loadExtListener() {
+		try {
+			this.clearListeners();
+			String ddl = System.getProperty("j4a.dnsdynamic.class");
+			if (ddl == null || ddl.trim().length() < 1) {
+				return;
+			}
+			String cdir = System.getProperty(ServerListener.J4A_CDIR);
+			File ddex = new File(cdir, "DnsDynamic.jar");
+			ClassLoader cl = this.getClass().getClassLoader();
+			if (ddex.exists()) {
+				cl = this.externalClassLoader(ddex, cl);
+			}
+			Class<?> cls = cl.loadClass(ddl);
+			DnsDynamic.Listener l = (Listener) cls.newInstance();
+			this.add(l);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	protected abstract String createBase64(String tar);
+
+	protected abstract ClassLoader externalClassLoader(File jar,
+			ClassLoader parent);
 
 	protected void preUpdate() {
 

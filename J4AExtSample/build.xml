@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="J4AExtSample" default="all" basedir=".">
+	<property environment="env" />
+	<property name="deploy.dir" value="./build" />
+	<property name="deploy.dns.f" value="${deploy.dir}/DnsDynamic.jar" />
+	<property name="deploy.connector.f" value="${deploy.dir}/ConnectorBuilder.jar" />
+	<property name="deploy.dns.tf" value="${deploy.dir}/DnsDynamic_t.jar" />
+	<property name="deploy.connector.tf" value="${deploy.dir}/ConnectorBuilder_t.jar" />
+	<property name="app.dir" value="." />
+	<property name="build.dir" value="${app.dir}/build" />
+	<property name="dest.dir" value="${build.dir}/cls" />
+	<!-- the server library,no necessary copy to WEB-INF/lib -->
+	<property name="lib.dir" value="${env.J4A_LIB_HOME}" />
+	<property name="DX_HOME" value="/Applications/adt-bundle-mac/sdk/build-tools/android-4.2.2/" />
+	<target name="complie">
+		<delete dir="${dest.dir}" />
+		<mkdir dir="${dest.dir}" />
+		<javac includeantruntime="true" srcdir="${app.dir}/src" destdir="${dest.dir}">
+			<classpath>
+				<fileset dir="${lib.dir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+			<exclude name="**/*Test.java" />
+		</javac>
+		<copy todir="${dest.dir}">
+			<fileset dir="${app.dir}/src">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="toDns" depends="complie">
+		<jar destfile="${deploy.dns.tf}">
+			<fileset dir="${dest.dir}">
+				<include name="**/*DnsDynamicImpl.class" />
+			</fileset>
+		</jar>
+		<exec executable="${DX_HOME}/dx">
+			<arg value="--dex" />
+			<arg value="--output" />
+			<arg value="${deploy.dns.f}" />
+			<arg value="${deploy.dns.tf}" />
+		</exec>
+		<delete file="${deploy.dns.tf}" />
+	</target>
+	<target name="toConnector" depends="complie">
+		<jar destfile="${deploy.connector.tf}">
+			<fileset dir="${dest.dir}">
+				<include name="**/*ConnectorBuilder.class" />
+			</fileset>
+		</jar>
+		<exec executable="${DX_HOME}/dx">
+			<arg value="--dex" />
+			<arg value="--output" />
+			<arg value="${deploy.connector.f}" />
+			<arg value="${deploy.connector.tf}" />
+		</exec>
+		<delete file="${deploy.connector.tf}" />
+	</target>
+	<target name="all" depends="toDns,toConnector" />
+</project>

@@ -130,8 +130,9 @@ public class JettyServer extends Server {
 	 *            the listen port.
 	 */
 	public JettyServer(File wsdir, File deploy, int port) {
-		super(port);
+		super();
 		this.init(wsdir, deploy);
+		this.initConnector(port);
 	}
 
 	private void init(File wsdir, File deploy) {
@@ -148,6 +149,28 @@ public class JettyServer extends Server {
 		}
 		this.setHandler(this.contexts);
 		this.loadEnv();
+	}
+
+	private void initConnector(int port) {
+		String ddl = System.getProperty("j4a.connector.builder.class");
+		if (ddl == null || ddl.trim().length() < 1) {
+			throw new InvalidParameterException(
+					"j4a.connector.builder.class configure not found");
+		}
+		try {
+			String cdir = System.getProperty(ServerListener.J4A_CDIR);
+			File ddex = new File(cdir, "ConnectorBuilder.jar");
+			ClassLoader cl = this.getClass().getClassLoader();
+			if (ddex.exists()) {
+				cl = this.buildConnectorClassLoader(ddex, cl);
+			}
+			Class<?> cls = cl.loadClass(ddl);
+			ConnectorBuilder builder = (ConnectorBuilder) cls.newInstance();
+			this.addConnector(builder.create(port));
+		} catch (Exception e) {
+			throw new InvalidParameterException(
+					"initial ConnectoryBuilder error:" + e.toString());
+		}
 	}
 
 	/**
@@ -452,6 +475,10 @@ public class JettyServer extends Server {
 			e.printStackTrace();
 			return tcl;
 		}
+	}
+
+	protected ClassLoader buildConnectorClassLoader(File jar, ClassLoader tcl) {
+		return tcl;
 	}
 
 	/**

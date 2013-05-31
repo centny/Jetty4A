@@ -53,41 +53,24 @@ public class ADnsDynamic extends DnsDynamic {
 		this.only4Wifi = true;
 	}
 
-	public void loadExtListener() {
-		try {
-			this.clearListeners();
-			String ddl = System.getProperty("j4a.dnsdynamic.class");
-			if (ddl == null || ddl.trim().length() < 1) {
-				return;
-			}
-			String wdir = System.getProperty(ServerListener.J4A_WDIR);
-			String cdir = System.getProperty(ServerListener.J4A_CDIR);
-			File ddex = new File(cdir, "DnsDynamic.jar");
-			ClassLoader cl = this.getClass().getClassLoader();
-			if (ddex.exists()) {
-				DexClassLoader dcl = new DexClassLoader(ddex.getAbsolutePath(),
-						wdir, null, cl);
-				cl = dcl;
-			}
-			Class<?> cls = cl.loadClass(ddl);
-			DnsDynamic.Listener l = (Listener) cls.newInstance();
-			this.add(l);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	//
 	@Override
 	protected String createBase64(String tar) {
 		return Base64.encodeToString(tar.getBytes(), Base64.DEFAULT);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.centny.jetty4a.server.api.DnsDynamic#preUpdate()
-	 */
+	@Override
+	protected ClassLoader externalClassLoader(File jar, ClassLoader parent) {
+		try {
+			String wdir = System.getProperty(ServerListener.J4A_WDIR);
+			DexClassLoader dcl = new DexClassLoader(jar.getAbsolutePath(),
+					wdir, null, parent);
+			return dcl;
+		} catch (Exception e) {
+			return parent;
+		}
+	}
+
 	@Override
 	protected void preUpdate() {
 		if (this.ctx != null) {
@@ -112,20 +95,6 @@ public class ADnsDynamic extends DnsDynamic {
 		this.ctx.unregisterReceiver(this.receiver);
 		this.receiver = null;
 		this.ctx = null;
-	}
-
-	public void updateDnsDynamic() {
-		if (this.isRunning()) {
-			return;
-		}
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				dnsDynamic();
-			}
-
-		}).start();
 	}
 
 	private void onNetworkChanged() {
