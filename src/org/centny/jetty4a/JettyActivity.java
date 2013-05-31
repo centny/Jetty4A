@@ -52,7 +52,7 @@ public class JettyActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.jetty, menu);
+//		getMenuInflater().inflate(R.menu.jetty, menu);
 		return true;
 	}
 
