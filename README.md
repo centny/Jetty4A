@@ -243,12 +243,12 @@ add configure code:
 
 ##Add Custom environment value to System.getProperties
 
-- add **env.peroerties** file to **<sdcard>/jetty4a/config**
+- add **env.peroerties** file to **(sdcard path)/jetty4a/config**
 - add key value by **key=value**
 
 
 ##Configure dynamic DNS
-- add **DnsDynamic.properties** file to **<sdcard>/jetty4a/config
+- add **DnsDynamic.properties** file to **(sdcard path)/jetty4a/config**
 - add blew code:
 
 	```
