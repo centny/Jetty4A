@@ -44,8 +44,6 @@ public class JettyServer extends Server {
 	/**
 	 * create a server in port by system properties.
 	 * 
-	 * @param port
-	 *            target port.
 	 * @return the JettyServer instance.
 	 */
 	public static JettyServer createServer(Class<?> js) {

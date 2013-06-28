@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Jetty4A" default="all" basedir=".">
+	<property environment="env" />
+	<property name="app.dir" value="." />
+	<property name="build.dir" value="./build" />
+	<property name="deploy.dir" value="${env.JEXT_LIB_HOME}/Jetty4A" />
+	<property name="deploy.version" value="1.0.0" />
+	<property name="deploy.api.binary.f" value="${deploy.dir}/${ant.project.name}-api-${deploy.version}.jar" />
+	<property name="deploy.api.source.f" value="${deploy.dir}/${ant.project.name}-api-${deploy.version}-source.jar" />
+	<property name="deploy.api.javadoc.f" value="${deploy.dir}/${ant.project.name}-api-${deploy.version}-javadoc.jar" />
+	<property name="dest.dir" value="${build.dir}/cls" />
+	<property name="javadoc.dir" value="${build.dir}/javadoc/${ant.project.name}-api-${deploy.version}-javadoc" />
+	<!-- the server library,no necessary copy to WEB-INF/lib -->
+	<property name="lib.dir" value="libs" />
+	<target name="build-api-binary">
+		<delete dir="${dest.dir}" />
+		<mkdir dir="${dest.dir}" />
+		<javac includeantruntime="true" srcdir="${app.dir}/src" destdir="${dest.dir}">
+			<classpath>
+				<fileset dir="${lib.dir}">
+					<include name="**/*.jar" />
+					<exclude name="andorid*.jar" />
+				</fileset>
+			</classpath>
+			<exclude name="**/*Test.java" />
+			<exclude name="org/centny/jetty4a/*.java" />
+			<exclude name="org/centny/jetty4a/server/*.java" />
+		</javac>
+		<delete file="${deploy.api.binary.f}" />
+		<jar destfile="${deploy.api.binary.f}">
+			<fileset dir="${dest.dir}">
+				<include name="**/*.class" />
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="build-api-source">
+		<delete file="${deploy.api.source.f}" />
+		<jar destfile="${deploy.api.source.f}">
+			<fileset dir="${app.dir}/src">
+				<include name="org/centny/jetty4a/server/api/*.java" />
+				<include name="org/centny/jetty4a/server/cfg/*.java" />
+				<include name="org/centny/jetty4a/server/dev/*.java" />
+				<include name="org/centny/jetty4a/server/log/*.java" />
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="build-api-javadoc">
+		<delete dir="${javadoc.dir}" />
+		<mkdir dir="${javadoc.dir}" />
+		<javadoc destdir="${javadoc.dir}" windowtitle="${ant.project.name}-${deploy.version} API Document" use="yes" linksource="no" splitindex="yes" encoding="UTF-8" docencoding="UTF-8">
+			<classpath>
+				<fileset dir="${lib.dir}">
+					<include name="**/*.jar" />
+					<exclude name="andorid*.jar" />
+				</fileset>
+			</classpath>
+			<packageset dir="${app.dir}/src" defaultexcludes="yes">
+				<include name="org/centny/jetty4a/server/api/**" />
+				<include name="org/centny/jetty4a/server/cfg/**" />
+				<include name="org/centny/jetty4a/server/dev/**" />
+				<include name="org/centny/jetty4a/server/log/**" />
+			</packageset>
+		</javadoc>
+		<delete file="${deploy.api.javadoc.f}" />
+		<jar destfile="${deploy.api.javadoc.f}">
+			<fileset dir="${javadoc.dir}">
+				<include name="**/*" />
+			</fileset>
+		</jar>
+	</target>
+	<target name="all" depends="build-api-binary,build-api-source,build-api-javadoc" />
+</project>

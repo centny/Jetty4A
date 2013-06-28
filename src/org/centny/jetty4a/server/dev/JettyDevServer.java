@@ -23,8 +23,6 @@ public class JettyDevServer extends JettyServer {
 	 *            the workspace directory.
 	 * @param deploy
 	 *            the deploy directory.
-	 * @param port
-	 *            the listen port.
 	 */
 	public JettyDevServer(File wsdir, File deploy) {
 		super(wsdir, deploy);

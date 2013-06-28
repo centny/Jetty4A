@@ -13,7 +13,7 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 
 /**
- * the dnsdynamic.com http client.
+ * the dnsdynamic.org http client.
  * 
  * @author Centny.
  * 
