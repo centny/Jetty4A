@@ -264,7 +264,7 @@ add configure code:
 **Note:**the Jy4a default implemetation is <http://dnsdynamic.org>
 
 ##Custom dynamic DNS implementation
-see example:**Jetty4A/J4AExtSample** project
+see example: **J4AExtSample** project in **Jetty4A**
 
 - add class **org.centny.j4aext.CustomDnsDynamicImpl** implements DnsDynamic.Listener:
 
@@ -284,7 +284,7 @@ see example:**Jetty4A/J4AExtSample** project
 	```
 
 ##Custom Jetty ConnectorBuilder
-see example:**Jetty4A/J4AExtSample** project
+see example: **J4AExtSample** project in **Jetty4A**
 
 - add class extends **org.centny.j4aext.CustomConnectorBuilder** implements ConnectorBuilder
 
