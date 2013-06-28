@@ -13,6 +13,10 @@ Jetty Web Server For Android
 - donwload apk <a href="https://docs.google.com/file/d/0B0QqxjdrDvmZOEY0bFNmRTJncmc/edit?usp=sharing">Jy4a-1.0.0.apk</a>
 - build apk by yourself.
 
+##Deploy Web App
+- convert .war file to .j4a by **war2j4a** tools
+- copy the .j4a file to **<sdcard>/jetty4a/webapp**
+
 ##Use Code
 - clone the code:
 
