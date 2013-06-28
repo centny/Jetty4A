@@ -10,8 +10,8 @@ Jetty Web Server For Android
 
 ##Install Jetty4A
 
-- Install manual <a href="https://docs.google.com/file/d/0B0QqxjdrDvmZSTN6RGg4a0RBc00/edit?usp=sharing">Jetty4A.apk</a>
-- Install in Play store
+- donwload apk <a href="https://docs.google.com/file/d/0B0QqxjdrDvmZOEY0bFNmRTJncmc/edit?usp=sharing">Jy4a-1.0.0.apk</a>
+- build apk by yourself.
 
 ##Use Code
 - clone the code:
@@ -28,7 +28,7 @@ Jetty Web Server For Android
 
 
 ##Install war2j4a tools
-- make sure your **DX_HOME** environment value had configured.
+- make sure your **DX_HOME**(where contain dx tools direcotyr) environment value had configured.
 - run blew script in console:
 
 	```
@@ -305,3 +305,6 @@ see example:**Jetty4A/J4AExtSample** project
 	```
 	j4a.connector.builder.class=org.centny.j4aext.CustomConnectorBuilder
 	```
+	
+##Other Web App in Jy4a
+- <https://github.com/Centny/MGitWeb>
