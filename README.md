@@ -6,23 +6,22 @@ Jetty Web Server For Android
 ##Features
 - contain most of Jetty Web Server features(JSP,Servlet)
 - custom Realm Basic Authorization for each WebApp
-- network change listener for dynamic dns.
+- network change listener for dynamic dns(see:<a href="#custom-dynamic-dns-implementation" >Custom dynamic DNS implementation</a>,<a href="#configure-dynamic-dns">Configure dynamic DNS</a>)
 
 ##Install Jetty4A
 
 - Install manual <a href="https://docs.google.com/file/d/0B0QqxjdrDvmZSTN6RGg4a0RBc00/edit?usp=sharing">Jetty4A.apk</a>
-- Install by Play store
-- Export APK manual for install:
-	- clone the code:
+- Install in Play store
 
-		```
-		cd <target directory>
-		git clone https://github.com/Centny/Centny
-		git clone https://github.com/Centny/Jetty4A
+##Use Code
+- clone the code:
 
-		```
-	- open the Jetty4A project by ADT
-	- export the apk file.
+	```
+	cd <target directory>
+	git clone https://github.com/Centny/Centny
+	git clone https://github.com/Centny/Jetty4A
+	```
+- open the Jetty4A project by ADT
 
 
 
